@@ -1,76 +1,52 @@
 
+:root { --scale: 1.5; }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Helvetica, Arial, sans-serif; color: #111; background: #f7f7f8; /* allow page scroll */ overflow: auto; }
-
-.titlebar {
-  position: sticky; top: 0; left: 0; right: 0; height: 56px;
-  display: flex; align-items: center; padding: 0 20px;
-  background: #101828; color: white; z-index: 1000;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-}
-.titlebar h1 { font-size: 18px; margin: 0; letter-spacing: 0.2px; font-weight: 600; }
-
-.container {
-  position: relative;
-  min-height: calc(100vh - 56px);
-  display: grid;
-  grid-template-columns: 240px 16px 1fr;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Helvetica, Arial, sans-serif;
+  color: #111; background: #f7f7f8; overflow-y: auto; overflow-x: hidden;
 }
 
-.sidebar {
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
-  padding: 16px 0;
-}
-.menu { list-style: none; padding: 8px 8px; margin: 0; display: flex; flex-direction: column; gap: 4px; }
-.menu a { display: block; padding: 10px 12px; border-radius: 10px; text-decoration: none; color: #111827; font-size: 14px; }
-.menu a:hover { background: #f2f4f7; }
-.menu a.active { background: #e6f0ff; color: #1d4ed8; font-weight: 600; }
+/* Title bar */
+.titlebar { position: sticky; top: 0; left: 0; right:0; height: 56px;
+  display:flex; align-items:center; padding:0 20px; background:#101828; color:#fff; z-index:1000; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.titlebar h1 { font-size:18px; margin:0; font-weight:600; letter-spacing:.2px; }
 
-.gap { background: transparent; }
+/* Layout: desktop */
+.container { display: grid; grid-template-columns: 240px 16px 1fr; gap: 0; align-items: start; }
+.sidebar { background:#fff; border-right:1px solid #e5e7eb; padding:16px 0; position: sticky; top:56px; align-self: start; height: calc(100dvh - 56px); overflow: auto; }
+.menu { list-style: none; margin:0; padding:8px; display:flex; flex-direction:column; gap:6px; }
+.menu a { display:block; padding:10px 12px; border-radius:10px; text-decoration:none; color:#111827; font-size:14px; }
+.menu a:hover { background:#f2f4f7; }
+.menu a.active { background:#e6f0ff; color:#1d4ed8; font-weight:600; }
 
-.content-wrap {
-  background: #ffffff;
-  border-left: 1px solid #f0f0f0;
-  display: flex; flex-direction: column;
-}
+.content-wrap { background:#fff; border-left:1px solid #f0f0f0; }
+.gap { width:16px; }
 
-.toolbar { display:none; } /* remove the hint row */
-
-.frame-wrap {
-  position: relative; flex: 1; /* allow main page scroll too */ overflow: visible;
-  display: flex; justify-content: flex-start; padding: 16px;
-}
-
+/* Frame area: body-only scroll => no internal scrolling */
+.frame-wrap { overflow: visible; padding:16px; }
 .content-scaler {
   width: min(1200px, 100%);
-  min-height: 70vh;
-  transform: scale(1.5);
+  transform: scale(var(--scale));
   transform-origin: 0 0;
-  width: calc(min(1200px, 100%) / 1.5);
-  /* height auto so page can scroll */
-  pointer-events: auto;
+  /* Height is set dynamically by JS to docHeight / scale */
 }
+#contentFrame { width: 100%; height: 100%; border: none; background: #fff; display:block; }
 
-#contentFrame { width: 100%; min-height: 70vh; border: none; background: white; }
-
-/* Scrollbars: don't restrict to content only anymore (default browser behavior) */
-
-/* Mobile: convert sidebar to multi-row top nav */
+/* Responsive: mobile top menu wraps */
 @media (max-width: 900px) {
-  .container { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
+  :root { --scale: 1; }
+  .container { grid-template-columns: 1fr; }
   .sidebar {
-    border-right: none; border-bottom: 1px solid #e5e7eb;
-    padding: 8px 8px;
+    position: static; height:auto; border-right:none; border-bottom:1px solid #e5e7eb; padding:12px 8px;
   }
-  .menu {
-    flex-direction: row; flex-wrap: wrap; gap: 8px 8px;
-  }
-  .menu a {
-    background: #f8fafc; border-radius: 999px; padding: 8px 12px; font-size: 15px;
-  }
-  .gap { display: none; }
-  .content-wrap { border-left: none; }
-  .content-scaler { width: 100%; transform: scale(1.0); } /* On mobile, don't scale up */
+  .menu { flex-direction: row; flex-wrap: wrap; gap: 8px 10px; }
+  .menu a { background:#f8fafc; border-radius:9999px; padding:10px 14px; }
+  .gap { display:none; }
+  .frame-wrap { padding:12px; }
 }
+
+/* Scrollbar aesthetics (global) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 6px; }
+::-webkit-scrollbar-track { background: #f3f4f6; }
