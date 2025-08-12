@@ -1,40 +1,63 @@
 
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Helvetica, Arial, sans-serif; color: #111; background: #f7f7f8; overflow-y: auto; overflow-x: hidden; }
+body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Helvetica,Arial,sans-serif; color:#111; background:#ffffff; }
 
-/* Top titlebar with menu */
+/* Sticky titlebar with menu */
 .titlebar {
   position: sticky; top: 0; left: 0; right: 0; z-index: 1000;
-  background: #101828; color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  background: #101828; color: #fff;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
-.titlebar-inner { max-width: 1200px; margin: 0 auto; padding: 14px 16px 8px; }
-.brand { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.titleline { display: flex; align-items: center; gap: 12px; }
+.brand { font-weight: 700; letter-spacing: .3px; font-size: 20px; }
 
-.topmenu { display: flex; flex-wrap: wrap; gap: 10px 12px; padding-bottom: 8px; }
-.topmenu a { display:inline-block; padding: 8px 12px; border-radius: 999px; text-decoration: none; font-size: 14px; color: #111827; background: #e5e7eb; }
-.topmenu a.active { background: #dbeafe; color: #1d4ed8; font-weight: 700; }
+/* Horizontal menu inside bar */
+.topmenu {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.topmenu a {
+  display:inline-block; padding:8px 12px; border-radius: 999px;
+  background: #0f172a; color:#e2e8f0; text-decoration: none; font-size:14px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.topmenu a.active { background:#e6f0ff; color:#1d4ed8; border-color: transparent; }
+.topmenu a:hover { background:#111827; }
 
-/* Main layout */
+/* Desktop: keep menu single-line by preventing wrap */
+@media (min-width: 1024px) {
+  .topmenu { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+}
+
+/* Layout */
 .main {
-  max-width: 1200px;
-  margin: 12px auto 40px;
-  padding: 0 12px;
+  min-height: calc(100vh - 0px);
+  padding: 12px 0 24px;
 }
-
-/* Content frame wrapper */
-.frame-wrap { display: flex; justify-content: center; }
-.content-scaler {
-  width: 100%;
+.viewer {
+  display: flex; justify-content: center; /* centered content */
+}
+.scaler {
+  width: min(1200px, 100%);
   transform-origin: 0 0;
 }
-/* Scale for desktop; mobile uses 1.0 */
-@media (min-width: 901px){
-  .content-scaler { transform: scale(1.5); width: calc(100%/1.5); }
+/* PC scale 150%, Mobile scale 1.0 */
+@media (min-width: 901px) {
+  .scaler { transform: scale(1.5); width: calc(min(1200px,100%)/1.5); }
+}
+@media (max-width: 900px) {
+  .scaler { transform: none; width: min(1200px,100%); }
 }
 
-/* Iframe base */
-#contentFrame { width: 100%; border: none; background: #fff; }
+/* Iframe container */
+.frame-wrap { width: 100%; }
+#contentFrame { width:100%; border: none; display:block; background:#fff; }
+
+/* Remove any side gray gaps */
+body, .main, .viewer, .scaler { background:#ffffff; }
 
 /* Utility */
 .hidden { display:none; }
