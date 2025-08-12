@@ -1,52 +1,41 @@
 
-:root { --scale: 1.5; }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; padding: 0; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Helvetica, Arial, sans-serif;
-  color: #111; background: #f7f7f8; overflow-y: auto; overflow-x: hidden;
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Helvetica, Arial, sans-serif; color: #111; background: #f7f7f8; overflow-y: auto; overflow-x: hidden; }
+
+/* Top titlebar with menu */
+.titlebar {
+  position: sticky; top: 0; left: 0; right: 0; z-index: 1000;
+  background: #101828; color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.titlebar-inner { max-width: 1200px; margin: 0 auto; padding: 14px 16px 8px; }
+.brand { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+
+.topmenu { display: flex; flex-wrap: wrap; gap: 10px 12px; padding-bottom: 8px; }
+.topmenu a { display:inline-block; padding: 8px 12px; border-radius: 999px; text-decoration: none; font-size: 14px; color: #111827; background: #e5e7eb; }
+.topmenu a.active { background: #dbeafe; color: #1d4ed8; font-weight: 700; }
+
+/* Main layout */
+.main {
+  max-width: 1200px;
+  margin: 12px auto 40px;
+  padding: 0 12px;
 }
 
-/* Title bar */
-.titlebar { position: sticky; top: 0; left: 0; right:0; height: 56px;
-  display:flex; align-items:center; padding:0 20px; background:#101828; color:#fff; z-index:1000; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-.titlebar h1 { font-size:18px; margin:0; font-weight:600; letter-spacing:.2px; }
-
-/* Layout: desktop */
-.container { display: grid; grid-template-columns: 240px 16px 1fr; gap: 0; align-items: start; }
-.sidebar { background:#fff; border-right:1px solid #e5e7eb; padding:16px 0; position: sticky; top:56px; align-self: start; height: calc(100dvh - 56px); overflow: auto; }
-.menu { list-style: none; margin:0; padding:8px; display:flex; flex-direction:column; gap:6px; }
-.menu a { display:block; padding:10px 12px; border-radius:10px; text-decoration:none; color:#111827; font-size:14px; }
-.menu a:hover { background:#f2f4f7; }
-.menu a.active { background:#e6f0ff; color:#1d4ed8; font-weight:600; }
-
-.content-wrap { background:#fff; border-left:1px solid #f0f0f0; }
-.gap { width:16px; }
-
-/* Frame area: body-only scroll => no internal scrolling */
-.frame-wrap { overflow: visible; padding:16px; }
+/* Content frame wrapper */
+.frame-wrap { display: flex; justify-content: center; }
 .content-scaler {
-  width: min(1200px, 100%);
-  transform: scale(var(--scale));
+  width: 100%;
   transform-origin: 0 0;
-  /* Height is set dynamically by JS to docHeight / scale */
 }
-#contentFrame { width: 100%; height: 100%; border: none; background: #fff; display:block; }
-
-/* Responsive: mobile top menu wraps */
-@media (max-width: 900px) {
-  :root { --scale: 1; }
-  .container { grid-template-columns: 1fr; }
-  .sidebar {
-    position: static; height:auto; border-right:none; border-bottom:1px solid #e5e7eb; padding:12px 8px;
-  }
-  .menu { flex-direction: row; flex-wrap: wrap; gap: 8px 10px; }
-  .menu a { background:#f8fafc; border-radius:9999px; padding:10px 14px; }
-  .gap { display:none; }
-  .frame-wrap { padding:12px; }
+/* Scale for desktop; mobile uses 1.0 */
+@media (min-width: 901px){
+  .content-scaler { transform: scale(1.5); width: calc(100%/1.5); }
 }
 
-/* Scrollbar aesthetics (global) */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 6px; }
-::-webkit-scrollbar-track { background: #f3f4f6; }
+/* Iframe base */
+#contentFrame { width: 100%; border: none; background: #fff; }
+
+/* Utility */
+.hidden { display:none; }
+.small { font-size: 12px; color: #98a2b3; }
