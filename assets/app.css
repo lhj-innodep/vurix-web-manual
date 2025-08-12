@@ -1,50 +1,36 @@
 
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; padding: 0; }
-body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Helvetica,Arial,sans-serif; color:#111; background:#fff; }
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Helvetica,Arial,sans-serif;color:#111;background:#fff;overflow-y:auto;overflow-x:hidden}
 
-/* Sticky top bar */
-.titlebar {
-  position: sticky; top: 0; left: 0; right: 0; z-index: 1000;
-  background: #101828; color: #fff;
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.titleline { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.brand { font-weight: 700; letter-spacing: .3px; font-size: 20px; }
+/* Fixed header: title on first row, menu on second row */
+.header{position:fixed;top:0;left:0;right:0;z-index:1000;background:#101828;color:#fff;border-bottom:1px solid rgba(255,255,255,.06)}
+.header-inner{display:grid;grid-template-columns:1fr;row-gap:8px;padding:12px 16px}
+.brand{font-size:20px;font-weight:700;letter-spacing:.2px}
 
-.topmenu { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.topmenu a {
-  display:inline-block; padding:8px 12px; border-radius: 999px;
-  background: #0f172a; color:#e2e8f0; text-decoration: none; font-size:14px;
-  border: 1px solid rgba(255,255,255,0.06);
-  white-space: nowrap;
-}
-.topmenu a.active { background:#e6f0ff; color:#1d4ed8; border-color: transparent; }
-.topmenu a:hover { background:#111827; }
+/* Menu row */
+.topmenu{display:flex;gap:10px;flex-wrap:wrap}
+.topmenu a{display:inline-block;padding:8px 12px;border-radius:999px;background:#0f172a;color:#e2e8f0;text-decoration:none;font-size:14px;border:1px solid rgba(255,255,255,.06)}
+.topmenu a.active{background:#e6f0ff;color:#1d4ed8;border-color:transparent}
+.topmenu a:hover{background:#111827}
 
-/* Desktop keep single line, allow horizontal scroll if overflow */
-@media (min-width: 1024px) {
-  .topmenu { flex-wrap: nowrap; overflow-x: auto; }
-}
+/* Desktop: keep menu single line disabled (request is 2 lines possible); no nowrap */
 
 /* Main layout */
-.main { padding: 16px 0 24px; background:#fff; }
-.viewer { display: flex; justify-content: center; background:#fff; }
-.scaler {
-  width: min(1200px, 100%);
-  transform-origin: 0 0;
-  background:#fff;
-}
-@media (min-width: 901px) {
-  .scaler { transform: scale(1.5); width: calc(min(1200px,100%)/1.5); }
-}
-@media (max-width: 900px) {
-  .scaler { transform: none; width: min(1200px,100%); }
-}
+.main{padding-top:var(--header-h,90px)}
+.viewer{display:flex;justify-content:flex-start;padding-left:20px} /* left align + 20px gutter */
+.scaler{width:min(1200px,100%);transform-origin:0 0}
+/* PC: 150% scale, left aligned */
+@media(min-width:901px){.scaler{transform:scale(1.5);width:calc(min(1200px,100%)/1.5)}}
+@media(max-width:900px){.scaler{transform:none;width:min(1200px,100%)}}
 
-.frame-wrap { width: 100%; background:#fff; }
-#contentFrame { width: 100%; border: none; display:block; background:#fff; }
+.frame-wrap{width:100%}
+#contentFrame{width:100%;border:none;display:block;background:#fff}
 
-/* Remove any side gray */
-body, .main, .viewer, .scaler, .frame-wrap { background:#fff; }
+/* Remove any grey stripes */
+body,.main,.viewer,.scaler{background:#fff}
+
+/* Custom scrollbar (single) on body */
+body::-webkit-scrollbar{width:12px}
+body::-webkit-scrollbar-thumb{background:#bdbdbd;border-radius:8px}
+body::-webkit-scrollbar-track{background:#f0f0f0}
