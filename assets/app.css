@@ -1,94 +1,72 @@
 
-/* Reset and base */
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Helvetica, Arial, sans-serif; color: #111; background: #f7f7f8; overflow: hidden; }
 
-/* Top titlebar */
+/* Top bar */
 .titlebar {
   position: fixed; top: 0; left: 0; right: 0; height: 56px;
-  display: flex; align-items: center; padding: 0 20px;
-  background: #101828; color: white; z-index: 1000;
+  display: flex; align-items: center; padding: 0 16px;
+  background: #101828; color: #fff; z-index: 1000;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
-.titlebar h1 { font-size: 18px; margin: 0; letter-spacing: 0.2px; font-weight: 600; }
+.titlebar h1 { font-size: 18px; margin: 0; font-weight: 600; }
 
 /* Layout */
 .container {
   position: fixed; top: 56px; left: 0; right: 0; bottom: 0;
   display: grid;
-  grid-template-columns: 240px 16px 1fr; /* sidebar | gap | content */
-  gap: 0;
+  grid-template-columns: 240px 16px 1fr;
 }
 
 /* Sidebar */
 .sidebar {
-  position: relative;
-  background: #ffffff;
+  background: #fff;
   border-right: 1px solid #e5e7eb;
-  padding: 16px 0;
-  overflow: hidden; /* no scroll; menu will fit */
+  padding: 16px 8px;
 }
-.menu {
-  list-style: none; padding: 8px 8px; margin: 0;
-  display: flex; flex-direction: column; gap: 4px;
-}
-.menu li { margin: 0; }
-.menu a {
-  display: block; padding: 10px 12px; border-radius: 10px;
-  text-decoration: none; color: #111827; font-size: 14px;
-}
+.menu { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.menu a { display: block; padding: 10px 12px; border-radius: 10px; text-decoration: none; color: #111827; font-size: 14px; }
 .menu a:hover { background: #f2f4f7; }
 .menu a.active { background: #e6f0ff; color: #1d4ed8; font-weight: 600; }
 
-/* gap */
 .gap { background: transparent; }
 
 /* Content area */
 .content-wrap {
-  position: relative;
-  background: #ffffff;
+  background: #fff;
   border-left: 1px solid #f0f0f0;
-  overflow: hidden; /* no page scrollbars */
+  overflow: hidden;
   display: flex; flex-direction: column;
 }
-
-.toolbar {
-  display: flex; align-items: center; justify-content: flex-end;
-  padding: 8px 12px; border-bottom: 1px solid #f2f4f7; background: #fff;
-  font-size: 12px; color: #667085;
-}
-
+.toolbar { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #f2f4f7; color: #667085; font-size: 12px; }
 .frame-wrap {
-  position: relative; flex: 1; overflow: auto; /* only content scrolls */
-  /* Center content and enforce max width (before scale) */
-  display: flex; justify-content: center; padding: 16px;
+  position: relative; flex: 1; overflow: auto;
+  display: flex; justify-content: flex-start; padding: 16px;
 }
 
-/* We scale the iframe by 150% while keeping a max content width of 1200px */
+/* Scaled content container (left-aligned), responsive width */
 .content-scaler {
-  width: min(1200px, 100%); /* max content width */
+  width: min(1200px, 100%);
   height: 100%;
   transform: scale(1.5);
   transform-origin: 0 0;
-  /* Compensate scaling so layout doesn't overflow container */
-  /* The wrapper element's dimensions are scaled visually, so we reduce intrinsic size */
   width: calc(min(1200px, 100%) / 1.5);
   height: calc(100% / 1.5);
-  pointer-events: auto;
 }
 
-#contentFrame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: white;
-}
+#contentFrame { width: 100%; height: 100%; border: 0; background: #fff; }
 
-/* Scrollbar styling (optional, content only) */
+/* Scrollbars only on content */
 .frame-wrap::-webkit-scrollbar { width: 10px; height: 10px; }
 .frame-wrap::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 6px; }
 .frame-wrap::-webkit-scrollbar-track { background: #f3f4f6; }
 
-/* Utility text */
-.small { font-size: 12px; color: #98a2b3; }
+/* Responsive tweaks: small screens collapse grid */
+@media (max-width: 900px) {
+  .container { grid-template-columns: 1fr; }
+  .sidebar { position: sticky; top: 56px; border-right: none; border-bottom: 1px solid #e5e7eb; display: flex; overflow-x: auto; white-space: nowrap; }
+  .menu { flex-direction: row; gap: 8px; }
+  .gap { display: none; }
+  .frame-wrap { padding: 8px; }
+}
