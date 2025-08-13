@@ -154,37 +154,39 @@
           ));
           head.appendChild(base);
 
-          // PC rem 스케일 (ChatGPT 유사)
+          /* ---- PC: 더 큰 스케일 (다른 웹매뉴얼 수준) ---- */
           var pcCss = [
-            /* Heading */
-            '[class~="01-1-Heading"], [class~="01-1-Heading"] * { font-size:2.25rem !important; line-height:1.25 !important; }', /* ~36px */
-            '[class~="01-2-Heading"], [class~="01-2-Heading"] * { font-size:1.75rem !important; line-height:1.3 !important; }',  /* ~28px */
-            '[class~="01-3-Heading"], [class~="01-3-Heading"] * { font-size:1.375rem !important; line-height:1.35 !important; }',/* ~22px */
+            /* 큰 제목/중제목/소제목 */
+            '[class~="01-1-Heading"], [class~="01-1-Heading"] * { font-size:2.75rem !important; line-height:1.22 !important; }', /* ~44px */
+            '[class~="01-2-Heading"], [class~="01-2-Heading"] * { font-size:2.125rem !important; line-height:1.28 !important; }', /* ~34px */
+            '[class~="01-3-Heading"], [class~="01-3-Heading"] * { font-size:1.625rem !important; line-height:1.33 !important; }', /* ~26px */
             /* 본문·리스트·볼드 등 */
-            '[class*="02-"], [class*="03-"], [class*="04-"], [class*="05-"], [class*="06-"], [class*="07-"] { font-size:1.125rem !important; line-height:1.7 !important; }', /* ~18px */
+            '[class*="02-"], [class*="03-"], [class*="04-"], [class*="05-"], [class*="06-"], [class*="07-"] { font-size:1.25rem !important; line-height:1.7 !important; }', /* 20px */
             '[class*="02-"] *, [class*="03-"] *, [class*="04-"] *, [class*="05-"] *, [class*="06-"] *, [class*="07-"] * { font-size:inherit !important; line-height:inherit !important; }',
             /* Small 계열 */
-            '[class*="08-"]{ font-size:1rem !important; line-height:1.75 !important; }', /* ~16px */
+            '[class*="08-"]{ font-size:1.125rem !important; line-height:1.75 !important; }', /* 18px */
             '[class*="08-"] *{ font-size:inherit !important; line-height:inherit !important; }',
             /* 가운데 정렬 변형 보존 */
             '[class~="02-3-Basic-L-Center"], [class~="05-3-Bold-Center"], [class~="08-3-Small-L-Center"], [class~="08-4-Small-B-Center"]{ text-align:center !important; }',
-            /* 가독성: 문단 간격 기본 */
-            'p{ margin: 0.75em 0; }'
+            /* 글자 축소 방지: 최소 폭 확보 */
+            'html, body{ min-width: 900px; }',
+            /* 일반 문단 간격 */
+            'p{ margin: 0.9em 0; }'
           ].join('\n');
 
-          // 모바일(<=700px)
+          /* ---- 모바일: 여전히 큼직하게 ---- */
           var moCss = [
-            '[class~="01-1-Heading"], [class~="01-1-Heading"] * { font-size:1.75rem !important; line-height:1.3 !important; }', /* 28px */
-            '[class~="01-2-Heading"], [class~="01-2-Heading"] * { font-size:1.5rem !important; line-height:1.35 !important; }',  /* 24px */
-            '[class~="01-3-Heading"], [class~="01-3-Heading"] * { font-size:1.25rem !important; line-height:1.4 !important; }', /* 20px */
-            '[class*="02-"], [class*="03-"], [class*="04-"], [class*="05-"], [class*="06-"], [class*="07-"] { font-size:1rem !important; line-height:1.7 !important; }', /* 16px */
+            '[class~="01-1-Heading"], [class~="01-1-Heading"] * { font-size:1.875rem !important; line-height:1.28 !important; }', /* 30px */
+            '[class~="01-2-Heading"], [class~="01-2-Heading"] * { font-size:1.625rem !important; line-height:1.32 !important; }',  /* 26px */
+            '[class~="01-3-Heading"], [class~="01-3-Heading"] * { font-size:1.375rem !important; line-height:1.38 !important; }', /* 22px */
+            '[class*="02-"], [class*="03-"], [class*="04-"], [class*="05-"], [class*="06-"], [class*="07-"] { font-size:1.125rem !important; line-height:1.75 !important; }', /* 18px */
             '[class*="02-"] *, [class*="03-"] *, [class*="04-"] *, [class*="05-"] *, [class*="06-"] *, [class*="07-"] * { font-size:inherit !important; line-height:inherit !important; }',
-            '[class*="08-"]{ font-size:0.9375rem !important; line-height:1.75 !important; }', /* 15px */
+            '[class*="08-"]{ font-size:1rem !important; line-height:1.8 !important; }', /* 16px */
             '[class*="08-"] *{ font-size:inherit !important; line-height:inherit !important; }',
             'table{ width:100% !important; table-layout:auto !important; }',
             'th,td{ white-space:normal !important; overflow-wrap:anywhere !important; word-break:break-word !important; }',
             'table img{ max-width:100% !important; height:auto !important; }',
-            'p{ margin: 0.7em 0; }'
+            'p{ margin: 0.85em 0; }'
           ].join('\n');
 
           var stylePc = document.createElement('style');
