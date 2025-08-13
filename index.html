@@ -1,89 +1,30 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VURIX Mobile 웹 매뉴얼</title>
-  <style>
-    :root{
-      --header1-h:56px;      /* 타이틀 바 높이 */
-      --header2-h:48px;      /* 메뉴 바 기본 높이 */
-      --header2-computed:48px; /* 실제 측정 높이 (JS가 갱신) */
-      --footer-h:40px;       /* 푸터 높이 */
-      --gap-cf:10px;         /* 콘텐츠와 푸터 사이 여백 */
-      --bar-bg:#f6f6f6;
-      --border:#d0d7de;
-      --active:#0969da;
-    }
-    *{box-sizing:border-box}
-    html{font-size:100%;}
-    html,body{height:100%;margin:0;color:#222;background:#fff;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Apple Gothic","Malgun Gothic","맑은 고딕",Arial,sans-serif;
-    }
-
-    .top-title{
-      position:fixed;top:0;left:0;right:0;height:var(--header1-h);
-      background:var(--bar-bg);display:flex;align-items:center;
-      padding:0 16px;border-bottom:none;z-index:1000;
-    }
-    .title-txt{font-size:1.125rem;font-weight:700;}
-
-    .top-menu{
-      position:fixed;top:var(--header1-h);left:0;right:0;
-      height:auto;background:var(--bar-bg);z-index:999;
-      border-bottom:1px solid var(--border);
-      display:flex;align-items:flex-end;justify-content:flex-start;
-      overflow:hidden;
-    }
-    .menu-list{
-      width:100%;display:flex;flex-wrap:nowrap;gap:16px;
-      padding:0 12px 0 12px;align-items:flex-end;justify-content:flex-start;
-      height:var(--header2-h);
-    }
-    .menu-item{
-      background:transparent;border:0;cursor:pointer;
-      padding:0 10px 12px 10px;height:var(--header2-h);
-      display:flex;align-items:flex-end;white-space:nowrap;
-      font-size:0.9375rem;color:#24292f;border-radius:0;
-    }
-    .menu-item:hover{color:#111;}
-    .menu-item.active{color:#111;font-weight:600;position:relative;}
-    .menu-item.active::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--active);}
-
-    .content-wrap{
-      position:fixed;left:0;right:0;
-      top:calc(var(--header1-h) + var(--header2-computed));
-      bottom:calc(var(--footer-h) + var(--gap-cf));
-      padding-left:5px;padding-right:5px;background:#fff;
-    }
-    .content-inner{position:relative;width:100%;height:100%;}
-    iframe#contentFrame{width:100%;height:100%;border:none;background:#fff;display:block;}
-
-    .footer{
-      position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);
-      background:#fff;border-top:none;display:flex;align-items:center;
-      justify-content:flex-start;padding-left:5px;font-size:0.75rem;color:#666;z-index:1000;
-    }
-
-    @media (max-width: 700px){
-      .menu-list{flex-wrap:wrap;row-gap:6px;height:auto;padding:6px 12px;}
-      .menu-item{height:38px;padding-bottom:6px;}
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="top-title" role="banner">
-    <div class="title-txt">VURIX Mobile</div>
+    <div class="bar-inner">
+      <div class="title-txt">VURIX Mobile</div>
+    </div>
   </header>
+
   <nav class="top-menu" role="navigation" aria-label="주 메뉴">
-    <div class="menu-list" id="menuList">
-      <button class="menu-item" data-src="./start.html">시작</button>
-      <button class="menu-item" data-src="./live.html">실시간 영상</button>
-      <button class="menu-item" data-src="./recorded.html">녹화 영상</button>
-      <button class="menu-item" data-src="./event.html">이벤트</button>
-      <button class="menu-item" data-src="./setup.html">설정</button>
-      <button class="menu-item" data-src="./other.html">기타</button>
-      <button class="menu-item" data-src="./info.html">참고</button>
+    <div class="bar-inner">
+      <div class="menu-list" id="menuList">
+        <button class="menu-item" data-src="./start.html">시작</button>
+        <button class="menu-item" data-src="./live.html">실시간 영상</button>
+        <button class="menu-item" data-src="./recorded.html">녹화 영상</button>
+        <button class="menu-item" data-src="./event.html">이벤트</button>
+        <button class="menu-item" data-src="./setup.html">설정</button>
+        <button class="menu-item" data-src="./other.html">기타</button>
+        <button class="menu-item" data-src="./info.html">참고</button>
+      </div>
     </div>
   </nav>
 
@@ -93,7 +34,9 @@
     </div>
   </main>
 
-  <footer class="footer" role="contentinfo">©2025 Innodep, Inc.</footer>
+  <footer class="footer" role="contentinfo">
+    <div class="bar-inner">©2025 Innodep, Inc.</div>
+  </footer>
 
   <script>
     (function(){
@@ -150,10 +93,10 @@
         head.appendChild(base);
 
         // 모바일 표 규칙(아이콘 제외)
-        var mo = doc.createElement('style');
+        var mo = document.createElement('style');
         mo.type = 'text/css';
         mo.media = 'screen and (max-width: 700px)';
-        mo.appendChild(doc.createTextNode([
+        mo.appendChild(document.createTextNode([
           'table{ width:100% !important; table-layout:auto !important; }',
           'th,td{ white-space:normal !important; overflow-wrap:anywhere !important; word-break:break-word !important; }',
           // 아이콘 제외하고만 반응형 이미지
