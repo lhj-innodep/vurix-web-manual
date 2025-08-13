@@ -1,110 +1,70 @@
-
-:root{
-  --header1-h:56px;         /* 타이틀 바 높이 */
-  --header2-h:48px;         /* 메뉴 바 기본 높이 */
-  --header2-computed:48px;  /* 실제 측정 높이 (JS가 갱신) */
-  --footer-h:40px;          /* 푸터 높이 */
-  --gap-cf:10px;            /* 콘텐츠와 푸터 사이 여백 */
-  --bar-bg:#f6f6f6;
-  --border:#d0d7de;
-  --active:#0969da;
-  --content-max:1200px;     /* 콘텐츠 최대 너비 (한 번에 관리) */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  overflow: hidden;
 }
-*{box-sizing:border-box}
-html{font-size:100%;}
-html,body{
-  height:100%;margin:0;color:#222;background:#fff;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Apple Gothic","Malgun Gothic","맑은 고딕",Arial,sans-serif;
+header {
+  background: #2c3e50;
+  color: white;
+  padding: 10px 20px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
 }
-
-/* 공통: 상단/하단 바 내부 중앙 컨테이너 */
-.bar-inner{
-  max-width:var(--content-max);
-  margin:0 auto;
-  height:100%;
-  display:flex;
-  align-items:center;
-  width:100%;
-  padding:0 16px;
+.container {
+  display: flex;
+  margin-top: 60px;
+  height: calc(100vh - 60px);
 }
-
-/* 상단 타이틀 바 */
-.top-title{
-  position:fixed;top:0;left:0;right:0;height:var(--header1-h);
-  background:var(--bar-bg);display:flex;align-items:center;
-  border-bottom:none;z-index:1000;
+nav {
+  padding-top: 60px;  /* push nav content below header */
+  width: 220px;
+  background: #ecf0f1;
+  height: 100%;
+  overflow-y: auto;
+  flex-shrink: 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
-.title-txt{font-size:1.125rem;font-weight:700;}
-
-/* 상단 메뉴 바 */
-.top-menu{
-  position:fixed;top:var(--header1-h);left:0;right:0;
-  height:auto;background:var(--bar-bg);z-index:999;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:flex-end;justify-content:center;
-  overflow:hidden;
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
-.top-menu .bar-inner{
-  align-items:flex-end;
-  padding:0 12px;
+nav li {
+  padding: 15px 20px;
+  cursor: pointer;
 }
-
-/* 상단 메뉴들 균등 중앙 정렬 */
-.menu-list{
-  width:100%;
-  display:flex;flex-wrap:nowrap;
-  align-items:flex-end;justify-content:center;
-  height:var(--header2-h);
-  gap:0;              /* 균등 분배를 위해 간격 제거 */
-  padding:0;
+nav li:hover {
+  background: #dcdcdc;
 }
-.menu-item{
-  flex:1 1 0;         /* 남은 공간을 균등 분배 */
-  min-width:0;
-  background:transparent;border:0;cursor:pointer;
-  padding:0 10px;height:var(--header2-h);
-  display:flex;align-items:flex-end;justify-content:center;
-  white-space:nowrap;
-  font-size:0.9375rem;color:#24292f;border-radius:0;
+main {
+  flex-grow: 1;
+  padding: 10px 0 0 20px;
+  overflow: hidden;
 }
-.menu-item:hover{color:#111;}
-.menu-item.active{color:#111;font-weight:600;position:relative;}
-.menu-item.active::after{
-  content:"";position:absolute;left:20%;right:20%;bottom:-1px;height:2px;background:var(--active);
+.iframe-wrapper {
+  transform: scale(1.5);
+  transform-origin: top left;
+  width: calc(100% / 1.5);
+  height: calc(100% / 1.5);
+  overflow: hidden;
+}
+iframe#manual-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
-/* 콘텐츠 영역 중앙 정렬 + 동일 최대 폭 */
-.content-wrap{
-  position:fixed;left:0;right:0;
-  top:calc(var(--header1-h) + var(--header2-computed));
-  bottom:calc(var(--footer-h) + var(--gap-cf));
-  background:#fff;
-}
-.content-inner{
-  position:relative;
-  width:100%;height:100%;
-  max-width:var(--content-max);
-  margin:0 auto;         /* 가로 중앙 정렬 */
-  padding:0 5px;         /* 좌우 살짝 여백 */
-}
-iframe#contentFrame{width:100%;height:100%;border:none;background:#fff;display:block;}
 
-/* 푸터: 동일 폭 + 중앙 정렬 + 카피 중앙 */
-.footer{
-  position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);
-  background:#fff;border-top:none;display:flex;align-items:center;
-  justify-content:center; /* 문구 중앙 정렬 */
-  font-size:0.75rem;color:#666;z-index:1000;
+iframe#contentFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+  display: block;
+  overflow: hidden; /* 내부 스크롤 제거 */
 }
-.footer .bar-inner{
-  justify-content:center;
-  padding:0 5px;
-}
-
-/* 모바일 대응 */
-@media (max-width: 700px){
-  .menu-list{flex-wrap:wrap;row-gap:6px;height:auto;padding:6px 0;}
-  .menu-item{height:38px;padding-bottom:6px;flex:1 1 33%;}
-  .bar-inner{padding:0 12px;}
-  .content-inner{padding:0 12px;}
+.content-wrap, .content-inner {
+  height: 100%;
 }
