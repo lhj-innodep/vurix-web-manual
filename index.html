@@ -2,227 +2,196 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VURIX Mobile 웹 매뉴얼</title>
   <style>
     :root{
-      --header1-h:56px;   /* 타이틀 바 높이 */
-      --header2-h:56px;   /* 메뉴 바 기본 높이 (모바일 줄바꿈 시 JS로 보정) */
+      --header1-h:56px;   /* 타이틀 바 */
+      --header2-h:56px;   /* 기본 메뉴 바 높이 (모바일 줄바꿈시 동적 보정) */
       --header2-computed:56px;
-      --footer-h:40px;    /* 푸터 높이 */
+      --footer-h:40px;    /* 푸터 */
       --bar-bg:#f6f6f6;
       --gh-border:#d0d7de;
       --gh-active:#0969da;
       --pc-scale:1.5;     /* PC 확대 배율 */
-      --left-padding:20px;
-      --fixed-width:900px; /* PC 콘텐츠 고정 폭(요청 버전 유지) */
     }
     *{box-sizing:border-box}
-    html,body{
-      height:100%;margin:0;padding:0;background:#fff;color:#222;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif;
-    }
+    html,body{height:100%;margin:0;background:#fff;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif;}
 
-    /* ===== 상단 타이틀 ===== */
+    /* 상단 타이틀 */
     .top-title{
-      position:fixed;inset:0 0 auto 0;height:var(--header1-h);
-      background:var(--bar-bg);display:flex;align-items:center;
-      padding:0 var(--left-padding);border-bottom:none;z-index:1000;
+      position:fixed;top:0;left:0;right:0;height:var(--header1-h);
+      background:var(--bar-bg);display:flex;align-items:center;gap:12px;
+      padding:0 16px;border-bottom:none; /* 줄 제거 */
+      z-index:1000;
     }
-    .title-txt{font-size:18px;font-weight:700;color:#111;white-space:nowrap;}
+    .title-text{font-size:18px;font-weight:700;color:#111;white-space:nowrap;}
 
-    /* ===== 상단 메뉴 (GitHub 탭풍) ===== */
+    /* 상단 메뉴 (GitHub 스타일 탭) */
     .top-menu{
-      position:fixed;top:var(--header1-h);left:0;right:0;height:auto;
-      background:var(--bar-bg);z-index:999;border-bottom:1px solid var(--gh-border);
+      position:fixed;top:var(--header1-h);left:0;right:0;
+      background:var(--bar-bg);display:flex;align-items:end;z-index:999;
+      border-bottom:1px solid var(--gh-border);
+      overflow-x:hidden;
     }
-    .menu-inner{ /* 900px 좌측 정렬 컨테이너 */
-      width:var(--fixed-width);max-width:100%;
-      padding-left:var(--left-padding);
-    }
-    .menu-list{
-      display:flex;flex-wrap:nowrap;align-items:flex-end;
-      gap:16px;height:var(--header2-h);
+    .menu-inner{
+      width:900px; /* 고정 폭 구성일 경우 */
+      max-width:100%;
+      display:flex;align-items:end;gap:16px;padding:0 12px;height:var(--header2-computed);
+      flex-wrap:nowrap;
     }
     .menu-item{
       position:relative;background:transparent;border:0;cursor:pointer;
       padding:0 10px 12px 10px;height:100%;display:flex;align-items:end;
-      font-size:15px;color:#24292f;border-radius:0;white-space:nowrap;
+      font-size:15px;color:#24292f;white-space:nowrap;background:none;
     }
     .menu-item:hover{color:#111;}
     .menu-item.active{color:#111;font-weight:600;}
-    .menu-item.active::after{
-      content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--gh-active);
-    }
+    .menu-item.active::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--gh-active);}
 
-    /* ===== 중앙 콘텐츠 ===== */
+    /* 콘텐츠 영역: 화면 가득 차도록 고정 */
     .content-wrap{
       position:fixed;left:0;right:0;
-      top:calc(var(--header1-h) + var(--header2-computed)); /* 메뉴 높이 동적 반영 */
-      bottom:var(--footer-h);background:#fff;
-      /* PC에서 좌측 여백 + 900px 고정폭 */
-      padding-left:var(--left-padding);
+      top:calc(var(--header1-h) + var(--header2-computed));bottom:var(--footer-h);
+      padding-left:20px;background:#fff;
     }
-    .content-inner{
-      width:var(--fixed-width);max-width:100%;height:100%;
-    }
-    iframe#contentFrame{
-      width:100%;height:100%;border:none;background:#fff;display:block;
-    }
+    .iframe-outer{position:relative;width:100%;height:100%;}
+    .iframe-inner{width:100%;height:100%;border:none;background:#fff;display:block;}
 
-    /* ===== 하단 푸터 ===== */
+    /* 하단바 */
     .footer{
       position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);
-      background:#fff;border-top:none;z-index:1000;
-    }
-    .footer-inner{
-      height:100%;display:flex;align-items:center;justify-content:flex-start;
-      padding-left:var(--left-padding);color:#666;font-size:12px;
-      width:var(--fixed-width);max-width:100%;
+      background:#fff;border-top:none;display:flex;align-items:center;justify-content:flex-start;
+      padding-left:20px;font-size:12px;color:#666;z-index:1000;
     }
 
-    /* 데스크톱: 바깥 스크롤 제거(이중 스크롤 방지) */
-    @media (min-width:1024px){
-      html,body{overflow:hidden;} /* 바깥 스크롤 숨김 → iframe만 스크롤 */
-      .menu-list{flex-wrap:nowrap;} /* PC 한 줄 */
-    }
-
-    /* 모바일: 메뉴 줄바꿈 & 안전영역 */
     @media (max-width: 768px){
-      :root{--header1-h:52px;--footer-h:40px;}
-      .title-txt{font-size:17px;}
-      .menu-list{flex-wrap:wrap;row-gap:8px;height:auto;padding-top:4px;}
-      .menu-item{font-size:15px;padding:6px 10px 10px 10px;height:auto;}
-      .top-title,.top-menu,.footer{padding-left:constant(safe-area-inset-left);padding-right:constant(safe-area-inset-right);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);}
+      :root{--header1-h:52px;--header2-h:48px;--footer-h:40px;}
+      .menu-inner{flex-wrap:wrap;row-gap:6px;align-items:center;height:auto;}
+      .menu-item{font-size:14px;padding:4px 8px 8px 8px;}
     }
   </style>
 </head>
 <body>
-  <!-- 상단 타이틀 -->
+  <!-- 상단 고정바 -->
   <header class="top-title" role="banner">
-    <div class="title-txt">VURIX Mobile</div>
+    <div class="title-text">VURIX Mobile</div>
   </header>
-
-  <!-- 상단 메뉴 -->
   <nav class="top-menu" role="navigation" aria-label="주 메뉴">
-    <div class="menu-inner">
-      <div class="menu-list" id="menuList">
-        <button class="menu-item" data-src="./start.html">시작</button>
-        <button class="menu-item" data-src="./live.html">실시간 영상</button>
-        <button class="menu-item" data-src="./recorded.html">녹화 영상</button>
-        <button class="menu-item" data-src="./event.html">이벤트</button>
-        <button class="menu-item" data-src="./setup.html">설정</button>
-        <button class="menu-item" data-src="./other.html">기타</button>
-        <button class="menu-item" data-src="./info.html">참고</button>
-      </div>
+    <div class="menu-inner" id="menuInner">
+      <button class="menu-item" data-src="./start.html">시작</button>
+      <button class="menu-item" data-src="./live.html">실시간 영상</button>
+      <button class="menu-item" data-src="./recorded.html">녹화 영상</button>
+      <button class="menu-item" data-src="./event.html">이벤트</button>
+      <button class="menu-item" data-src="./setup.html">설정</button>
+      <button class="menu-item" data-src="./other.html">기타</button>
+      <button class="menu-item" data-src="./info.html">참고</button>
     </div>
   </nav>
 
   <!-- 중앙 콘텐츠 -->
   <main class="content-wrap" role="main">
-    <div class="content-inner">
-      <iframe id="contentFrame" title="콘텐츠 프레임" src="" loading="lazy" referrerpolicy="no-referrer"></iframe>
+    <div class="iframe-outer">
+      <iframe class="iframe-inner" id="contentFrame" title="콘텐츠 프레임" src="" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
   </main>
 
-  <!-- 하단 푸터 -->
-  <footer class="footer" role="contentinfo">
-    <div class="footer-inner">©2025 Innodep, Inc.</div>
-  </footer>
+  <!-- 하단바 -->
+  <footer class="footer" role="contentinfo">©2025 Innodep, Inc.</footer>
 
   <script>
     (function(){
       const iframe = document.getElementById('contentFrame');
       const menuButtons = Array.from(document.querySelectorAll('.menu-item'));
-      const menuList = document.getElementById('menuList');
-      const mqDesktop = window.matchMedia('(min-width: 1024px)');
+      const menuInner = document.getElementById('menuInner');
+      const mqPC = window.matchMedia('(min-width: 1024px)');
 
-      // 해시라우팅: #start.html 등
-      function initialTargetFromHash(){
-        const hash = window.location.hash.replace(/^#/, '').trim();
-        const btn = menuButtons.find(b => b.dataset.src.replace('./','') === hash);
-        return btn || menuButtons[0];
+      // 해시 경로 -> 파일명만 추출
+      function hashToPath(h){
+        const v = (h || '').replace(/^#/, '').trim();
+        if(!v) return './start.html';
+        // 안전 처리: 지정된 메뉴 외엔 start.html
+        const allow = new Set(['start.html','live.html','recorded.html','event.html','setup.html','other.html','info.html','index.html']);
+        return allow.has(v) ? './'+v : './start.html';
       }
 
-      function setActive(btn){
-        menuButtons.forEach(b=>b.classList.toggle('active', b===btn));
+      function setActiveBySrc(src){
+        menuButtons.forEach(b=>b.classList.toggle('active', b.dataset.src === src));
       }
-      function loadSrc(src, btn){
-        // 해시 갱신 (뒤로가기 대응)
-        const clean = src.replace('./','');
-        if (window.location.hash !== '#' + clean) {
-          history.replaceState(null, '', '#' + clean);
+
+      function loadByHash(){
+        const src = hashToPath(location.hash);
+        if(iframe.getAttribute('src') !== src){
+          iframe.setAttribute('src', src);
         }
-        iframe.src = src;
-        if(btn) setActive(btn);
+        setActiveBySrc(src);
       }
 
-      // 메뉴 실제 높이 측정 → 변수 반영
-      function updateMenuHeight(){
-        const h = menuList ? Math.ceil(menuList.offsetHeight) : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header2-h')) || 56;
+      // 메뉴 클릭 시 해시 갱신
+      menuButtons.forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const src = btn.dataset.src;
+          const hash = src.replace('./','');
+          if(location.hash !== '#'+hash){
+            history.replaceState(null,'','#'+hash);
+          }
+          loadByHash();
+        });
+      });
+
+      // 메뉴 실제 높이 측정 -> CSS 변수 반영
+      function measureMenuHeight(){
+        const h = menuInner ? menuInner.offsetHeight : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header2-h')) || 56;
         document.documentElement.style.setProperty('--header2-computed', h + 'px');
       }
-      window.addEventListener('resize', updateMenuHeight);
-      new ResizeObserver(updateMenuHeight).observe(menuList);
+      const ro = new ResizeObserver(measureMenuHeight);
+      ro.observe(menuInner);
 
-      // 초기 로드
-      document.addEventListener('DOMContentLoaded', ()=>{
-        updateMenuHeight();
-        const targetBtn = initialTargetFromHash();
-        loadSrc(targetBtn.dataset.src, targetBtn);
-      });
-
-      // 메뉴 클릭
-      menuButtons.forEach(btn=>{
-        btn.addEventListener('click', ()=> loadSrc(btn.dataset.src, btn));
-      });
-
-      // iframe 내부에 PC 전용 확대 주입 + 아이콘 리사이즈
+      // PC에서만 내부 문서 확대
       function enhanceIframe(){
         try{
           const doc = iframe.contentDocument || iframe.contentWindow.document;
           if(!doc) return;
-
           // 아이콘 자동 리사이즈
-          const icons = doc.querySelectorAll('img[src*="0_ICON"]');
-          icons.forEach(img=>{
-            img.style.height = '1em';
-            img.style.width = 'auto';
-            img.style.verticalAlign = 'middle';
+          doc.querySelectorAll('img[src*="0_ICON"]').forEach(img=>{
+            img.style.height='1em'; img.style.width='auto'; img.style.verticalAlign='middle';
           });
 
-          // PC에서만 내부 확대
-          if(mqDesktop.matches){
-            const bodyEl = doc.body, htmlEl = doc.documentElement;
-            if(bodyEl){
-              bodyEl.style.zoom = String(getPCScale());
-              bodyEl.style.transformOrigin = 'top left';
-              // zoom 미지원 폴백
-              if(!('zoom' in bodyEl.style) || bodyEl.style.zoom === ''){
-                const s = getPCScale();
-                bodyEl.style.transform = 'scale(' + s + ')';
-                bodyEl.style.width = 'calc(100% / ' + s + ')';
-              }
+          if(mqPC.matches){
+            // zoom 우선
+            if(doc.body){ doc.body.style.zoom = 'var(--pc-scale)'; }
+            if(doc.documentElement){ doc.documentElement.style.zoom = 'var(--pc-scale)'; }
+
+            // zoom이 먹지 않는 브라우저(드물지만) 대비 transform 폴백
+            const applied = (doc.body && getComputedStyle(doc.body).zoom !== 'normal' && getComputedStyle(doc.body).zoom !== '1' ) ||
+                            (doc.documentElement && getComputedStyle(doc.documentElement).zoom !== 'normal' && getComputedStyle(doc.documentElement).zoom !== '1' );
+            if(!applied && doc.body){
+              doc.body.style.transform = 'scale(1.5)';
+              doc.body.style.transformOrigin = 'top left';
+              doc.body.style.width = 'calc(100% / 1.5)'; // 가로 보정
             }
-            if(htmlEl){
-              htmlEl.style.minWidth = '900px'; /* 최소 가시 폭 */
+            // 최소 보이는 폭 보장
+            if(doc.documentElement){
+              doc.documentElement.style.minWidth = '900px';
             }
-          } else {
-            // 모바일은 원배율
-            const bodyEl = doc.body;
-            if(bodyEl){
-              bodyEl.style.zoom = '';
-              bodyEl.style.transform = '';
-              bodyEl.style.width = '';
+            if(doc.body){
+              doc.body.style.minWidth = '900px';
             }
+          }else{
+            // 모바일: 원배율
+            if(doc.body){ doc.body.style.zoom = ''; doc.body.style.transform=''; doc.body.style.width=''; doc.body.style.minWidth=''; }
+            if(doc.documentElement){ doc.documentElement.style.zoom=''; doc.documentElement.style.minWidth=''; }
           }
-        }catch(e){ /* 접근 불가 시 무시 */ }
+        }catch(e){ /* 접근 불가시 무시 */ }
       }
-      function getPCScale(){
-        const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pc-scale'));
-        return (v && !isNaN(v)) ? v : 1.5;
-      }
+
       iframe.addEventListener('load', enhanceIframe);
+
+      window.addEventListener('hashchange', loadByHash);
+      document.addEventListener('DOMContentLoaded', ()=>{
+        measureMenuHeight();
+        loadByHash();
+      });
     })();
   </script>
 </body>
