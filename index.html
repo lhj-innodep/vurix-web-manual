@@ -2,32 +2,204 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>VURIX Mobile</title>
-  <link rel="stylesheet" href="assets/app.css?v=1754980825" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VURIX Mobile 웹 매뉴얼</title>
+  <style>
+    :root{
+      --header1-h:56px;   /* 타이틀 바 */
+      --header2-h:56px;   /* 메뉴 바(높이 넓힘) */
+      --footer-h:40px;    /* 푸터 */
+      --bar-bg:#f6f6f6;
+      --gh-border:#d0d7de;
+      --gh-active:#0969da;
+      --scale:1.5;        /* PC 확대 배율 */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:#fff;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif}
+
+    /* 상단 타이틀 */
+    .top-title{
+      position:fixed;top:0;left:0;right:0;height:var(--header1-h);
+      background:var(--bar-bg);display:flex;align-items:center;gap:12px;
+      padding:0 16px;border-bottom:none; /* 줄 제거 */
+      z-index:1000;
+    }
+    .title-btn{font-size:18px;font-weight:700;color:#111;text-decoration:none;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;}
+    .title-btn img[src*="0_ICON"]{height:1em;width:auto;vertical-align:middle;}
+
+    /* 상단 메뉴 (GitHub 스타일 탭) */
+    .top-menu{
+      position:fixed;top:var(--header1-h);left:0;right:0;height:var(--header2-h);
+      background:var(--bar-bg);display:flex;align-items:flex-end;z-index:999;
+      border-bottom:1px solid var(--gh-border);
+      overflow-x:auto;            /* PC에서 가로 스크롤 가능 */
+      overflow-y:hidden;          /* 세로 스크롤 제거(높이 확대로 해결 + 안전장치) */
+      -webkit-overflow-scrolling:touch;
+    }
+    .menu-list{display:flex;gap:12px;padding:0 12px 0 12px;height:100%;align-items:flex-end;}
+    .menu-item{
+      position:relative;background:transparent;border:0;cursor:pointer;
+      padding:0 12px 12px 12px;min-height:40px;display:flex;align-items:flex-end;
+      font-size:15px;color:#24292f;border-radius:0;white-space:nowrap;
+    }
+    .menu-item:hover{color:#111;}
+    .menu-item.active{color:#111;font-weight:600;}
+    .menu-item.active::after{
+      content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--gh-active);
+    }
+
+    /* 콘텐츠 영역: 메뉴 실제 높이에 자동 보정 */
+    .content-wrap{
+      position:fixed;left:0;right:0;
+      top:calc(var(--header1-h) + var(--header2-computed, var(--header2-h)));
+      bottom:var(--footer-h);
+      padding-left:20px;background:#fff;
+    }
+    /* PC 확대용 래퍼 */
+    .iframe-outer{
+      position:relative;width:100%;height:100%;
+      transform-origin:top left;
+    }
+    .iframe-inner{width:100%;height:100%;border:none;background:#fff;display:block;}
+
+    /* 푸터 */
+    .footer{
+      position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);
+      background:#fff;border-top:none;
+      display:flex;align-items:center;justify-content:flex-start;
+      padding-left:20px;font-size:12px;color:#666;z-index:1000;
+    }
+
+    /* 모바일: 메뉴 줄바꿈, 높이 자동 */
+    @media (max-width: 768px){
+      :root{--header1-h:52px;--footer-h:40px;}
+      .top-menu{height:auto;overflow-x:visible;}
+      .menu-list{flex-wrap:wrap;row-gap:6px;height:auto;align-items:flex-start;padding-top:6px;padding-bottom:6px;}
+      .menu-item{padding:6px 10px;min-height:0;}
+      .title-btn{font-size:17px;}
+    }
+  </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-inner">
-      <div class="brand">VURIX Mobile</div>
-      <nav class="menu"><a href="#start.html" data-src="start.html">시작</a>
-<a href="#live.html" data-src="live.html">실시간 영상</a>
-<a href="#recorded.html" data-src="recorded.html">녹화 영상</a>
-<a href="#event.html" data-src="event.html">이벤트</a>
-<a href="#setup.html" data-src="setup.html">설정</a>
-<a href="#other.html" data-src="other.html">기타</a>
-<a href="#info.html" data-src="info.html">참고</a></nav>
-    </div>
+  <!-- 상단 고정바 -->
+  <header class="top-title" role="banner">
+    <a class="title-btn" id="titleButton" title="index.html 로드">
+      <span>VURIX Mobile</span>
+    </a>
   </header>
-  <main class="main">
-    <div class="viewer">
-      <div class="scaler">
-        <div class="frame-wrap">
-          <iframe id="contentFrame" title="Content"></iframe>
-        </div>
-      </div>
+  <nav class="top-menu" role="navigation" aria-label="주 메뉴" id="topMenu">
+    <div class="menu-list">
+      <button class="menu-item" data-src="./start.html">시작</button>
+      <button class="menu-item" data-src="./live.html">실시간 영상</button>
+      <button class="menu-item" data-src="./recorded.html">녹화 영상</button>
+      <button class="menu-item" data-src="./event.html">이벤트</button>
+      <button class="menu-item" data-src="./setup.html">설정</button>
+      <button class="menu-item" data-src="./other.html">기타</button>
+      <button class="menu-item" data-src="./info.html">참고</button>
+    </div>
+  </nav>
+
+  <!-- 중앙 콘텐츠 -->
+  <main class="content-wrap" role="main">
+    <div class="iframe-outer" id="iframeOuter">
+      <iframe class="iframe-inner" id="contentFrame" title="콘텐츠 프레임" src="" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
   </main>
-  <script src="assets/app.js?v=1754980825"></script>
+
+  <!-- 하단바 -->
+  <footer class="footer" role="contentinfo">©2025 Innodep, Inc.</footer>
+
+  <script>
+    (function(){
+      const iframe = document.getElementById('contentFrame');
+      const iframeOuter = document.getElementById('iframeOuter');
+      const menuButtons = Array.from(document.querySelectorAll('.menu-item'));
+      const titleButton = document.getElementById('titleButton');
+      const topMenu = document.getElementById('topMenu');
+
+      function setActive(btn){
+        menuButtons.forEach(b=>b.classList.toggle('active', b===btn));
+      }
+      function loadSrc(src, btn){
+        iframe.src = src;
+        if(btn) setActive(btn);
+      }
+
+      // 메뉴바 실제 높이 측정해서 콘텐츠 top 보정
+      function measureTopMenu(){
+        const h = topMenu.offsetHeight;
+        document.documentElement.style.setProperty('--header2-computed', h + 'px');
+      }
+
+      // 초기: 시작 페이지
+      document.addEventListener('DOMContentLoaded', ()=>{
+        const defaultBtn = menuButtons.find(b=>b.textContent.trim()==='시작') || menuButtons[0];
+        measureTopMenu();
+        if(defaultBtn){ loadSrc(defaultBtn.dataset.src, defaultBtn); }
+        applyScale(); // 첫 진입 시 스케일 적용
+      });
+
+      // 리사이즈/폰트 로딩 시 재측정
+      window.addEventListener('resize', measureTopMenu);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(measureTopMenu);
+      }
+
+      // 메뉴 클릭
+      menuButtons.forEach(btn=>{
+        btn.addEventListener('click', ()=> loadSrc(btn.dataset.src, btn));
+      });
+
+      // 타이틀 클릭 시 index.html을 iframe에 로드 (전체 새로고침 없이)
+      titleButton.addEventListener('click', ()=>{
+        loadSrc('./index.html', null);
+        menuButtons.forEach(b=>b.classList.remove('active'));
+      });
+
+      // PC에서만 150% 확대: iframe 래퍼에 스케일 적용
+      const mq = window.matchMedia('(min-width: 1024px)');
+      function applyScale(){
+        if(mq.matches){
+          const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--scale')) || 1.5;
+          iframeOuter.style.transform = 'scale(' + scale + ')';
+          iframeOuter.style.width = 'calc(100% / ' + scale + ')';
+        }else{
+          iframeOuter.style.transform = 'none';
+          iframeOuter.style.width = '100%';
+          iframeOuter.style.height = '100%';
+        }
+      }
+      mq.addEventListener ? mq.addEventListener('change', ()=>{applyScale(); measureTopMenu();}) : mq.addListener(()=>{applyScale(); measureTopMenu();});
+
+      // iframe 로드 후 내부 높이 측정해 외부 높이 보정 + 아이콘 사이즈
+      function onIframeLoad(){
+        try{
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          if(doc){
+            // 아이콘 자동 리사이즈
+            const icons = doc.querySelectorAll('img[src*="0_ICON"]');
+            icons.forEach(img=>{
+              img.style.height='1em';
+              img.style.width='auto';
+              img.style.verticalAlign='middle';
+            });
+
+            // PC 스케일일 때 높이 보정: 내부 문서 실제 높이를 측정
+            if(mq.matches){
+              const scrollH = Math.max(
+                doc.body ? doc.body.scrollHeight : 0,
+                doc.documentElement ? doc.documentElement.scrollHeight : 0
+              );
+              const scale = 1.5;
+              iframe.style.height = (scrollH / scale) + 'px';
+            }else{
+              iframe.style.height = '100%';
+            }
+          }
+        }catch(e){ /* 크로스오리진 등 접근 불가 시 무시 */ }
+      }
+      iframe.addEventListener('load', onIframeLoad);
+    })();
+  </script>
 </body>
 </html>
