@@ -2,27 +2,26 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>VURIX Mobile 웹 매뉴얼</title>
   <style>
     :root{
       --header1-h:56px;   /* 타이틀 바 */
-      --header2-h:60px;   /* 메뉴 바 기본 높이(PC) */
+      --header2-h:48px;   /* 기본 메뉴 바 높이 (실측으로 덮어씀) */
+      --header2-computed:48px;
       --footer-h:40px;    /* 푸터 */
       --bar-bg:#f6f6f6;
       --gh-border:#d0d7de;
       --gh-active:#0969da;
-      --pc-scale:1.5;     /* PC 확대 배율 */
-      --vh: 1vh;          /* 모바일 UI 변동 대응용 */
+      --scale:1.5;        /* PC 확대 배율 */
     }
     *{box-sizing:border-box}
     html,body{
-      height:100%;margin:0;background:#fff;color:#222;
+      height:100%;
+      margin:0;
+      background:#fff;
+      color:#222;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif
-    }
-    /* 데스크톱: 바깥 스크롤 제거 → iframe만 세로 스크롤 */
-    @media (min-width:1024px){
-      html, body { overflow: hidden; }
     }
 
     /* 상단 타이틀 */
@@ -32,8 +31,7 @@
       padding:0 16px;border-bottom:none; /* 줄 제거 */
       z-index:1000;
     }
-    .title-text{font-size:18px;font-weight:700;color:#111;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;}
-    .title-text img[src*="0_ICON"]{height:1em;width:auto;vertical-align:middle;}
+    .title-text{font-size:18px;font-weight:700;color:#111;white-space:nowrap;}
 
     /* 상단 메뉴 (GitHub 스타일 탭) */
     .top-menu{
@@ -41,56 +39,61 @@
       min-height:var(--header2-h);
       background:var(--bar-bg);display:flex;align-items:flex-end;z-index:999;
       border-bottom:1px solid var(--gh-border);
-      overflow:hidden; /* 스크롤바 숨김(내용이 넘치지 않도록 아래에서 wrap 처리) */
-      -webkit-overflow-scrolling:touch;
+      overflow-x:hidden; /* 스크롤바 숨김(실제 스크롤도 차단) */
+      overflow-y:hidden;
     }
-    .menu-list{
-      display:flex;gap:16px;padding:0 12px;height:100%;align-items:flex-end;
-      flex-wrap:nowrap;justify-content:flex-start;
-      width:100%;
-    }
+    .menu-list{display:flex;gap:16px;padding:0 12px;height:100%;align-items:flex-end;flex-wrap:nowrap;}
     .menu-item{
       position:relative;background:transparent;border:0;cursor:pointer;
-      padding:0 12px 12px 12px;min-height:40px;display:flex;align-items:flex-end;
-      font-size:15px;color:#24292f;border-radius:0;white-space:nowrap;
+      padding:0 10px 8px 10px;height:100%;display:flex;align-items:flex-end;
+      font-size:15px;color:#24292f;border-radius:0;white-space:nowrap;background:none;
     }
     .menu-item:hover{color:#111;}
     .menu-item.active{color:#111;font-weight:600;}
     .menu-item.active::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--gh-active);}
 
-    /* 콘텐츠 영역: 메뉴 실제 높이에 자동 보정 + 동적 100dvh 대응 */
+    /* 콘텐츠 영역 */
     .content-wrap{
       position:fixed;left:0;right:0;
-      top:calc(var(--header1-h) + var(--header2-computed, var(--header2-h)));
-      height:calc((var(--vh) * 100) - var(--footer-h) - (var(--header1-h) + var(--header2-computed, var(--header2-h))));
+      /* 메뉴 실제 높이 값을 활용해 상단 여백 최소화 */
+      top:calc(var(--header1-h) + var(--header2-computed));
+      bottom:var(--footer-h);
       padding-left:20px;background:#fff;
     }
-    .iframe-inner{
-      width:100%;height:100%;border:none;background:#fff;display:block;
+    .content-inner{
+      position:relative;
+      width:100%;height:100%;
+    }
+    iframe#contentFrame{
+      width:100%;
+      height:100%;
+      border:none;
+      display:block;
+      background:#fff;
+      /* 내부 스크롤만 쓰도록 기본 설정 */
+      overflow:auto;
     }
 
     /* 푸터 */
     .footer{
       position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);
-      background:#fff;border-top:none;
+      background:#fff;          /* 콘텐츠와 동일 */
+      border-top:none;          /* 경계선 제거 */
       display:flex;align-items:center;justify-content:flex-start;
       padding-left:20px;font-size:12px;color:#666;z-index:1000;
-      padding-bottom: env(safe-area-inset-bottom, 0);
     }
 
-    /* 1023px 이하: 메뉴 줄바꿈으로 스크롤바 회피, 페이지 스크롤 활성화 */
-    @media (max-width: 1023px){
-      :root{--header1-h:52px;--footer-h:40px;}
-      html, body { overflow:auto; }
-      .top-menu{min-height:auto;overflow:visible;}
-      .menu-list{flex-wrap:wrap;row-gap:8px;height:auto;align-items:flex-start;padding-top:6px;padding-bottom:6px;}
-      .menu-item{padding:6px 10px;min-height:0;}
-      .title-text{font-size:17px;}
-      .content-wrap{
-        top:calc(var(--header1-h) + var(--header2-computed, var(--header2-h)));
-        height:auto;bottom:var(--footer-h); /* 모바일은 페이지 자체 스크롤 */
-        position:fixed; /* 고정 유지 */
-      }
+    /* 데스크톱에서는 바깥 스크롤 제거 → iframe 하나만 스크롤 */
+    @media (min-width:1024px){
+      html,body{overflow:hidden;}
+      .menu-list{flex-wrap:nowrap;}
+    }
+
+    /* 모바일에서 메뉴 줄바꿈 & 페이지 스크롤 유지 */
+    @media (max-width: 768px){
+      :root{--header1-h:52px;--header2-h:48px;--footer-h:40px;}
+      .menu-list{gap:12px;flex-wrap:wrap;row-gap:6px;align-items:flex-end;}
+      .menu-item{font-size:14px;padding:0 8px 8px 8px;}
     }
   </style>
 </head>
@@ -100,7 +103,7 @@
     <span class="title-text">VURIX Mobile</span>
   </header>
   <nav class="top-menu" role="navigation" aria-label="주 메뉴" id="topMenu">
-    <div class="menu-list">
+    <div class="menu-list" id="menuList">
       <button class="menu-item" data-src="./start.html">시작</button>
       <button class="menu-item" data-src="./live.html">실시간 영상</button>
       <button class="menu-item" data-src="./recorded.html">녹화 영상</button>
@@ -113,110 +116,123 @@
 
   <!-- 중앙 콘텐츠 -->
   <main class="content-wrap" role="main">
-    <iframe class="iframe-inner" id="contentFrame" title="콘텐츠 프레임" src="" loading="lazy" referrerpolicy="no-referrer"></iframe>
+    <div class="content-inner">
+      <iframe id="contentFrame" title="콘텐츠 프레임" src="" loading="lazy" referrerpolicy="no-referrer"></iframe>
+    </div>
   </main>
 
   <!-- 하단바 -->
   <footer class="footer" role="contentinfo">©2025 Innodep, Inc.</footer>
 
   <script>
-    (function(){
-      const iframe = document.getElementById('contentFrame');
-      const menuButtons = Array.from(document.querySelectorAll('.menu-item'));
-      const topMenu = document.getElementById('topMenu');
+  (function(){
+    const iframe = document.getElementById('contentFrame');
+    const menuButtons = Array.from(document.querySelectorAll('.menu-item'));
+    const topMenu = document.getElementById('topMenu');
 
-      /* 동적 100dvh 대응 (모바일 주소창 높이 변화 무시) */
-      function setVH(){
-        const h = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', h + 'px');
-      }
-      setVH();
-      window.addEventListener('resize', setVH);
+    const mqPC = window.matchMedia('(min-width:1024px)');
 
-      function setActive(btn){
-        menuButtons.forEach(b=>b.classList.toggle('active', b===btn));
-      }
-      function loadSrc(src, btn){
-        // 해시 라우팅 갱신
-        if (location.hash !== '#' + src.replace('./','')) {
-          history.replaceState(null, '', '#' + src.replace('./',''));
+    // 메뉴 활성 표시
+    function setActiveBySrc(src){
+      menuButtons.forEach(b => b.classList.toggle('active', b.dataset.src === src));
+    }
+
+    // 메뉴 클릭 시 iframe 로드 + 해시 반영
+    menuButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const src = btn.dataset.src;
+        loadIframe(src);
+        location.hash = src.replace('./','');
+      });
+    });
+
+    // 해시가 있으면 반영, 없으면 start.html
+    function initialLoad(){
+      const hash = location.hash.replace('#','').trim();
+      const defaultSrc = hash && /\.html$/.test(hash) ? './'+hash : './start.html';
+      loadIframe(defaultSrc);
+      setActiveBySrc(defaultSrc);
+    }
+
+    // 상단 메뉴 실제 높이 → CSS 변수 반영 (여백 과다 방지)
+    function setComputedHeader2(){
+      const h = topMenu ? topMenu.offsetHeight : 48;
+      document.documentElement.style.setProperty('--header2-computed', h + 'px');
+    }
+
+    // PC에서 콘텐츠 축소 방지: 내부 문서에만 확대 + 최소 폭 보장
+    function enhanceIframe(){
+      try{
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        if(!doc) return;
+
+        // 스타일 주입 (중복 방지)
+        if(!doc.getElementById('vurix-injected-style')){
+          const style = doc.createElement('style');
+          style.id = 'vurix-injected-style';
+          style.textContent = `
+            html, body { margin:0; padding:0; }
+            /* PC에서 최소 가시 폭 보장 → 창이 좁아져도 글자 크기 유지 */
+            @media (min-width:1024px){
+              html { min-width: 900px !important; }
+              body { min-width: 900px !important; }
+            }
+            /* 아이콘 자동 리사이즈 */
+            img[src*="0_ICON"]{ height:1em !important; width:auto !important; vertical-align:middle; }
+          `;
+          doc.head ? doc.head.appendChild(style) : doc.documentElement.appendChild(style);
         }
-        iframe.src = src;
-        if(btn) setActive(btn);
-      }
-      // 해시로 진입 시 해당 메뉴 선택
-      function initialBtnFromHash(){
-        const h = (location.hash || '').replace('#','').trim();
-        const btn = menuButtons.find(b => b.dataset.src.replace('./','') === h);
-        return btn ? btn : menuButtons.find(b=>b.textContent.trim()==='시작') || menuButtons[0];
-      }
 
-      // 메뉴바 실제 높이 측정해서 콘텐츠 top 보정
-      function measureTopMenu(){
-        const h = topMenu.offsetHeight;
-        document.documentElement.style.setProperty('--header2-computed', h + 'px');
-      }
-
-      // 초기: 시작(또는 해시) 페이지
-      document.addEventListener('DOMContentLoaded', ()=>{
-        measureTopMenu();
-        const btn = initialBtnFromHash();
-        if(btn){ loadSrc(btn.dataset.src, btn); }
-      });
-
-      // 리사이즈/폰트 로딩 시 재측정
-      window.addEventListener('resize', measureTopMenu);
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(measureTopMenu);
-      }
-
-      // 메뉴 클릭
-      menuButtons.forEach(btn=>{
-        btn.addEventListener('click', ()=> loadSrc(btn.dataset.src, btn));
-      });
-
-      // PC에서만 150% 확대: iframe 내부 문서에 적용
-      const mq = window.matchMedia('(min-width: 1024px)');
-      function enhanceIframe(){
-        try{
-          const doc = iframe.contentDocument || iframe.contentWindow.document;
-          if(!doc) return;
-
-          // 아이콘 자동 리사이즈
-          doc.querySelectorAll('img[src*="0_ICON"]').forEach(img=>{
-            img.style.height='1em'; img.style.width='auto'; img.style.verticalAlign='middle';
-          });
-
-          // 확대(PC만): 내부 body/html에 적용
-          const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pc-scale')) || 1.5;
-          const htmlEl = doc.documentElement, bodyEl = doc.body;
-          if (mq.matches) {
-            if (bodyEl) {
-              bodyEl.style.zoom = scale;
-              bodyEl.style.transformOrigin = 'top left';
-              if (!bodyEl.style.zoom) { // zoom 미지원 폴백
-                bodyEl.style.transform = 'scale(' + scale + ')';
-                bodyEl.style.width = 'calc(100% / ' + scale + ')';
-              }
-            }
-            if (htmlEl) {
-              htmlEl.style.minWidth = '900px'; // 최소 가시 폭
-            }
-          } else {
-            if (bodyEl) {
-              bodyEl.style.zoom = '';
-              bodyEl.style.transform = '';
-              bodyEl.style.width = '';
-            }
-            if (htmlEl) {
-              htmlEl.style.minWidth = '';
+        if(mqPC.matches){
+          // 데스크톱 확대: 내부 문서에 직접 적용
+          const body = doc.body;
+          if(body){
+            body.style.transformOrigin = 'top left';
+            body.style.zoom = '1.5';
+            if(!body.style.zoom){ // zoom 미지원 폴백
+              body.style.transform = 'scale(1.5)';
+              body.style.width = 'calc(100% / 1.5)';
             }
           }
-        }catch(e){}
+        }else{
+          // 모바일은 원배율
+          const body = doc.body;
+          if(body){
+            body.style.zoom = '';
+            body.style.transform = '';
+            body.style.width = '';
+          }
+        }
+      }catch(e){ /* 접근 불가 시 무시 */ }
+    }
+
+    // 공통: 초기 로드
+    window.addEventListener('DOMContentLoaded', ()=>{
+      setComputedHeader2();
+      initialLoad();
+    });
+
+    // 리사이즈/기기 변경 시 상단바 높이 재계산
+    window.addEventListener('resize', setComputedHeader2);
+
+    // iframe 로드 시 스타일 주입/확대 적용
+    iframe.addEventListener('load', enhanceIframe);
+
+    // 해시 변경 시 콘텐츠 교체
+    window.addEventListener('hashchange', ()=>{
+      const hash = location.hash.replace('#','').trim();
+      if(hash && /\.html$/.test(hash)){
+        const src = './'+hash;
+        loadIframe(src);
+        setActiveBySrc(src);
       }
-      iframe.addEventListener('load', enhanceIframe);
-      mq.addEventListener ? mq.addEventListener('change', enhanceIframe) : mq.addListener(enhanceIframe);
-    })();
+    });
+
+    function loadIframe(src){
+      iframe.src = src;
+      setActiveBySrc(src);
+    }
+  })();
   </script>
 </body>
 </html>
