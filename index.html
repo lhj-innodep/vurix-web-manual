@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VURIX Mobile 웹 매뉴얼</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20250814" />
 </head>
 <body>
   <header class="top-title" role="banner">
@@ -17,13 +17,13 @@
   <nav class="top-menu" role="navigation" aria-label="주 메뉴">
     <div class="bar-inner">
       <div class="menu-list" id="menuList">
-        <button class="menu-item" data-src="./start.html">시작</button>
-        <button class="menu-item" data-src="./live.html">실시간 영상</button>
-        <button class="menu-item" data-src="./recorded.html">녹화 영상</button>
-        <button class="menu-item" data-src="./event.html">이벤트</button>
-        <button class="menu-item" data-src="./setup.html">설정</button>
-        <button class="menu-item" data-src="./other.html">기타</button>
-        <button class="menu-item" data-src="./info.html">참고</button>
+        <button class="menu-item" data-src="./pages/start.html">시작</button>
+        <button class="menu-item" data-src="./pages/live.html">실시간 영상</button>
+        <button class="menu-item" data-src="./pages/recorded.html">녹화 영상</button>
+        <button class="menu-item" data-src="./pages/event.html">이벤트</button>
+        <button class="menu-item" data-src="./pages/setup.html">설정</button>
+        <button class="menu-item" data-src="./pages/other.html">기타</button>
+        <button class="menu-item" data-src="./pages/info.html">참고</button>
       </div>
     </div>
   </nav>
@@ -149,7 +149,7 @@
       iframe.addEventListener('load', onIframeLoad);
 
       function syncFromHash(){
-        var hash = location.hash || '#start.html';
+        var hash = location.hash || '#pages/start.html';
         var src = hash.replace(/^#/, '');
         var targetBtn = null;
         for (var i=0;i<menuButtons.length;i++){
@@ -183,5 +183,5 @@
       }
     })();
   </script>
-</body>
+<script src="script.js?v=20250814" defer></script></body>
 </html>
