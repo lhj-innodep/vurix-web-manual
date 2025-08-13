@@ -2,89 +2,85 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VURIX Mobile 웹 매뉴얼</title>
   <style>
     :root{
-      --header1-h:56px;   /* 타이틀 바 */
-      --header2-h:48px;   /* 메뉴 바(기본값, 실제 높이로 보정) */
-      --header2-computed: 48px;
-      --footer-h:40px;    /* 푸터 */
+      --header1-h:56px;   /* 타이틀 바 높이 */
+      --header2-h:56px;   /* 메뉴 바 기본 높이(모바일 줄바꿈 대비 실제값으로 덮어씀) */
+      --header2-computed:56px;
+      --footer-h:40px;    /* 푸터 높이 */
+      --gap-cf:10px;      /* 콘텐츠와 푸터 사이 여백 */
       --bar-bg:#f6f6f6;
       --gh-border:#d0d7de;
       --gh-active:#0969da;
-      --gap-cf:10px;      /* 콘텐츠-푸터 사이 여백 */
       --bp-mobile:700px;  /* 모바일 임계폭 */
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:#fff;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif}
 
+    /* PC에서 이중 스크롤 방지: 세로는 iframe만 */
+    @media (min-width: 701px){
+      html, body{ overflow-y: hidden; overflow-x: hidden; }
+    }
+
     /* 상단 타이틀 */
     .top-title{
       position:fixed;top:0;left:0;right:0;height:var(--header1-h);
       background:var(--bar-bg);display:flex;align-items:center;gap:12px;
-      padding:0 16px;border-bottom:none; /* 줄 없음 */
+      padding:0 16px;border-bottom:none; /* 줄 제거 */
       z-index:1000;
     }
-    .title-label{font-size:18px;font-weight:700;color:#111;white-space:nowrap;}
+    .title-text{font-size:18px;font-weight:700;color:#111;white-space:nowrap;}
 
-    /* 상단 메뉴 (GitHub 스타일 탭, 좌측 정렬 고정) */
+    /* 상단 메뉴 (좌측 정렬) */
     .top-menu{
       position:fixed;top:var(--header1-h);left:0;right:0;min-height:var(--header2-h);
       background:var(--bar-bg);display:flex;align-items:end;z-index:999;
       border-bottom:1px solid var(--gh-border);
-      overflow:hidden; /* 우측 스크롤바 방지 */
+      overflow:hidden; /* 스크롤바 차단 */
     }
-    .menu-list{
-      display:flex;gap:16px;padding:0 12px 0 12px;min-height:var(--header2-h);
-      align-items:end;justify-content:flex-start;flex-wrap:nowrap;margin:0;
-      width:100%;
-    }
+    .menu-list{display:flex;gap:16px;padding:0 12px;height:100%;align-items:end;justify-content:flex-start;flex-wrap:nowrap;margin:0;}
     .menu-item{
       position:relative;background:transparent;border:0;cursor:pointer;
-      padding:0 12px 10px 12px;display:flex;align-items:end;
+      padding:0 10px 12px 10px;height:100%;display:flex;align-items:end;
       font-size:15px;color:#24292f;border-radius:0;white-space:nowrap;
     }
     .menu-item:hover{color:#111;}
     .menu-item.active{color:#111;font-weight:600;}
-    .menu-item.active::after{
-      content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--gh-active);
-    }
+    .menu-item.active::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--gh-active);}
 
     /* 콘텐츠 영역 */
     .content-wrap{
       position:fixed;left:0;right:0;
       top:calc(var(--header1-h) + var(--header2-computed));
       bottom:calc(var(--footer-h) + var(--gap-cf));
-      padding-left:5px;padding-right:5px;background:#fff;
+      padding-left:5px; padding-right:5px;
+      background:#fff;
     }
     .content-inner{width:100%;height:100%;}
-    iframe#contentFrame{width:100%;height:100%;border:none;background:#fff;display:block;}
+    iframe#contentFrame{width:100%;height:100%;border:0;background:#fff;display:block;}
 
-    /* 하단바 */
+    /* 하단 고정바 */
     .footer{
       position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);
-      background:#fff;border-top:none;display:flex;align-items:center;
-      justify-content:flex-start;padding-left:5px;font-size:12px;color:#666;z-index:1000;
-    }
-
-    /* PC: 바깥 스크롤 제거(iframe만 스크롤) */
-    @media (min-width: calc(var(--bp-mobile) + 1px)){
-      html,body{overflow:hidden;}
+      background:#fff;border-top:none;
+      display:flex;align-items:center;justify-content:flex-start;
+      padding-left:5px;font-size:12px;color:#666;z-index:1000;
     }
 
     /* 모바일: 메뉴 줄바꿈 */
-    @media (max-width: var(--bp-mobile)){
-      .menu-list{flex-wrap:wrap;row-gap:6px;}
-      .menu-item{font-size:14px;padding:0 10px 10px 10px;}
-      .title-label{font-size:17px;}
+    @media (max-width: 700px){
+      :root{ --header2-h:56px; }
+      .menu-list{ flex-wrap:wrap; row-gap:6px; }
+      .menu-item{ padding:0 8px 10px 8px; font-size:14px; }
     }
   </style>
 </head>
 <body>
   <!-- 상단 고정바 -->
   <header class="top-title" role="banner">
-    <span class="title-label">VURIX Mobile</span>
+    <span class="title-text">VURIX Mobile</span>
   </header>
   <nav class="top-menu" role="navigation" aria-label="주 메뉴">
     <div class="menu-list" id="menuList">
@@ -110,133 +106,155 @@
 
   <script>
   (function(){
-    const iframe = document.getElementById('contentFrame');
-    const menuButtons = Array.from(document.querySelectorAll('.menu-item'));
-    const topMenu = document.querySelector('.top-menu');
-    const root = document.documentElement;
+    var BP = 700; // 모바일 임계폭
+    var iframe = document.getElementById('contentFrame');
+    var menuButtons = Array.prototype.slice.call(document.querySelectorAll('.menu-item'));
+    var topMenu = document.querySelector('.top-menu');
+    var menuList = document.getElementById('menuList');
 
-    /* 메뉴 클릭 + 해시 연동 */
-    function setActive(btn){ menuButtons.forEach(b=>b.classList.toggle('active', b===btn)); }
+    function measureMenuHeight(){
+      var h2 = topMenu.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--header2-computed', h2 + 'px');
+    }
+
+    function setActive(btn){
+      menuButtons.forEach(function(b){ b.classList.toggle('active', b===btn); });
+    }
+
     function loadSrc(src, btn){
-      if(!src) return;
-      if(location.hash !== '#' + src.replace('./','')) location.hash = src.replace('./','');
-      iframe.src = src;
-      if(btn) setActive(btn);
+      if (iframe.src.indexOf(src) === -1) {
+        iframe.src = src;
+      }
+      if (btn) setActive(btn);
+      // 주소 해시 동기화
+      if (location.hash !== '#' + src.replace('./','')) {
+        location.hash = src.replace('./','');
+      }
     }
-    function loadFromHash(){
-      const hash = location.hash.replace('#','') || 'start.html';
-      const btn = menuButtons.find(b => (b.dataset.src.replace('./','') === hash));
-      loadSrc('./' + hash, btn || menuButtons[0]);
-    }
-    window.addEventListener('hashchange', loadFromHash);
 
-    /* 상단 메뉴 실제 높이로 콘텐츠 시작점 보정 */
-    function updateHeaderSize(){
-      const h2 = topMenu.getBoundingClientRect().height;
-      root.style.setProperty('--header2-computed', h2 + 'px');
+    // 해시 라우팅
+    function applyHash(){
+      var hash = (location.hash || '').replace(/^#/, '');
+      var btn = menuButtons.find(function(b){ return b.getAttribute('data-src').replace('./','') === hash; });
+      if (btn) {
+        loadSrc(btn.getAttribute('data-src'), btn);
+      } else {
+        // 기본: start.html
+        var defaultBtn = menuButtons[0];
+        loadSrc(defaultBtn.getAttribute('data-src'), defaultBtn);
+      }
     }
-    window.addEventListener('resize', updateHeaderSize);
-    new ResizeObserver(updateHeaderSize).observe(document.getElementById('menuList'));
 
-    /* iframe 로드 후 내부 문서에 스타일/보정 주입 */
+    // 아이콘/타이포/표/여백 보정 주입
+    function injectStylesInto(doc){
+      if (!doc) return;
+      try{
+        var isMobile = window.matchMedia('(max-width: ' + BP + 'px)').matches;
+
+        // 공통 유틸 스타일
+        var common = [];
+        common.push('body{display:flow-root !important;}');
+        common.push('img[src*="0_ICON"]{height:1em; width:auto; vertical-align:middle;}');
+        common.push('body > *:first-child{margin-top:0 !important;}');
+        common.push('._1-1-Heading:first-of-type, [class*="01-1-Heading"]:first-of-type{margin-top:0 !important; padding-top:0 !important;}');
+
+        // PC/모바일 타이포 매핑 (rem + line-height)
+        var pc = [];
+        pc.push('[class~="01-1-Heading"], [class~="01-1-Heading"] * { font-size:3.125rem !important; line-height:1.25 !important; }');
+        pc.push('[class~="01-2-Heading"], [class~="01-2-Heading"] * { font-size:2.8125rem !important; line-height:1.28 !important; }');
+        pc.push('[class~="01-3-Heading"], [class~="01-3-Heading"] * { font-size:2.5rem !important; line-height:1.3 !important; }');
+        var bodyPCSize = '2.1875rem'; /* 35px */
+        var bodyPCLH = '1.6';
+        var smallPCSize = '2.0625rem'; /* 33px */
+        var smallPCLH = '1.7';
+        var bodyClasses = ["02-1-Basic-L","02-2-Basic-L-Sub","02-3-Basic-L-Center","03-1-Num","03-2-Num(2-9)","03-3-Num(10)","04-1-Bull-L","04-2-Bull-L-Sub","04-3-Bull-L-Sub(H)","05-1-Bold","05-2-Bold-Sub","05-3-Bold-Center","05-4-Bold-Bull","06-1-Note-B","06-2-Note-Bull-L","06-3-Info-L","07-1-Ring-B","07-2-Ring-B-Sub"];
+        for (var i=0;i<bodyClasses.length;i++){
+          var c = bodyClasses[i];
+          pc.push('[class~="'+c+'"], [class~="'+c+'"] * { font-size:'+bodyPCSize+' !important; line-height:'+bodyPCLH+' !important; }');
+        }
+        var smallClasses = ["08-1-Small-L","08-2-Small-L-Sub","08-3-Small-L-Center","08-4-Small-B-Center","08-5-Small-Bull-L"];
+        for (var j=0;j<smallClasses.length;j++){
+          var s = smallClasses[j];
+          pc.push('[class~="'+s+'"], [class~="'+s+'"] * { font-size:'+smallPCSize+' !important; line-height:'+smallPCLH+' !important; }');
+        }
+
+        var mobile = [];
+        mobile.push('[class~="01-1-Heading"], [class~="01-1-Heading"] * { font-size:1.75rem !important; line-height:1.3 !important; }');
+        mobile.push('[class~="01-2-Heading"], [class~="01-2-Heading"] * { font-size:1.5rem !important; line-height:1.3 !important; }');
+        mobile.push('[class~="01-3-Heading"], [class~="01-3-Heading"] * { font-size:1.25rem !important; line-height:1.35 !important; }');
+        var bodyMSize = '1.125rem'; /* 18px */
+        var bodyMLH = '1.7';
+        var smallMSize = '1rem'; /* 16px */
+        var smallMLH = '1.75';
+        for (var k=0;k<bodyClasses.length;k++){
+          var cb = bodyClasses[k];
+          mobile.push('[class~="'+cb+'"], [class~="'+cb+'"] * { font-size:'+bodyMSize+' !important; line-height:'+bodyMLH+' !important; }');
+        }
+        for (var m=0;m<smallClasses.length;m++){
+          var sb = smallClasses[m];
+          mobile.push('[class~="'+sb+'"], [class~="'+sb+'"] * { font-size:'+smallMSize+' !important; line-height:'+smallMLH+' !important; }');
+        }
+
+        // 모바일 표 대응: 100% 폭 + 줄바꿈
+        var mobileTable = [];
+        mobileTable.push('table{ width:100% !important; table-layout:auto !important; }');
+        mobileTable.push('th, td{ white-space:normal !important; overflow-wrap:anywhere !important; word-break:break-word !important; text-overflow:clip !important; padding:6px; }');
+        mobileTable.push('table img{ max-width:100% !important; height:auto !important; }');
+
+        // 내부 최소 폭(PC에서 글자 줄어듦 방지)
+        if (!isMobile){
+          if (doc.documentElement) doc.documentElement.style.minWidth = '900px';
+        }
+
+        var style = doc.createElement('style');
+        var css = [];
+        Array.prototype.push.apply(css, common);
+        if (isMobile){
+          Array.prototype.push.apply(css, mobile);
+          Array.prototype.push.apply(css, mobileTable);
+        } else {
+          Array.prototype.push.apply(css, pc);
+        }
+        style.textContent = css.join('\n');
+        if (doc.head) doc.head.appendChild(style);
+      }catch(e){}
+    }
+
     function onIframeLoad(){
       try{
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
-        if(!doc) return;
-
-        /* 아이콘 자동 리사이즈 */
-        const style = doc.createElement('style');
-        style.setAttribute('data-injected','fonts');
-        style.textContent = `
-          /* 기본 타이포 세팅 */
-          html{ font-size: 100%; } /* 사용자 기본값 존중(보통 16px) */
-          body{ line-height: 1.6; }
-
-          /* 마진 접힘 방지 + 첫 제목 위여백 제거 */
-          body{ display: flow-root !important; }
-          body > *:first-child{ margin-top:0 !important; }
-          ._1-1-Heading:first-of-type{ margin-top:0 !important; padding-top:0 !important; }
-
-          /* 아이콘(파일명에 0_ICON) 자동 리사이즈 */
-          img[src*="0_ICON"]{ height:1em; width:auto; vertical-align:middle; }
-
-          /* 모바일 테이블: 100% + 줄바꿈 */
-          @media (max-width: ${getComputedStyle(document.documentElement).getPropertyValue('--bp-mobile').trim() || '700px'}){
-            table{ width:100% !important; table-layout:auto !important; }
-            th,td{ white-space:normal; overflow-wrap:anywhere; word-break:break-word; text-overflow:clip; padding:6px; }
-            table img{ max-width:100% !important; height:auto !important; }
-          }
-
-          /* ===== 데스크톱(>bp) 폰트 매핑: rem + line-height ===== */
-          @media (min-width: calc(${getComputedStyle(document.documentElement).getPropertyValue('--bp-mobile').trim() || '700px'} + 1px)){
-            html, body{ min-width: 900px; } /* 좁은 창에서도 글자 크기 유지, 가로 스크롤 허용 */
-            /* Heading */
-            [class~="01-1-Heading"], [class~="01-1-Heading"] * { font-size: 3.125rem !important; line-height: 1.2 !important; }
-            [class~="01-2-Heading"], [class~="01-2-Heading"] * { font-size: 2.8125rem !important; line-height: 1.25 !important; }
-            [class~="01-3-Heading"], [class~="01-3-Heading"] * { font-size: 2.5rem !important; line-height: 1.3 !important; }
-            /* Body & Lists */
-            [class*="02-"], [class*="02-"] *,
-            [class*="03-"], [class*="03-"] *,
-            [class*="04-"], [class*="04-"] *,
-            [class*="05-"], [class*="05-"] *,
-            [class*="06-"], [class*="06-"] *,
-            [class*="07-"], [class*="07-"] * {
-              font-size: 2.1875rem !important; /* 35px */
-              line-height: 1.6 !important;
-            }
-            /* Small set */
-            [class*="08-"], [class*="08-"] * {
-              font-size: 2.0625rem !important; /* 33px */
-              line-height: 1.7 !important;
-            }
-          }
-
-          /* ===== 모바일(<=bp) 폰트 매핑: rem + line-height ===== */
-          @media (max-width: ${getComputedStyle(document.documentElement).getPropertyValue('--bp-mobile').trim() or '700px'}){
-            body{ font-size: 1rem; line-height: 1.7; } /* 기본 16px */
-            [class~="01-1-Heading"], [class~="01-1-Heading"] * { font-size: 1.75rem !important; line-height: 1.3 !important; }  /* 28px */
-            [class~="01-2-Heading"], [class~="01-2-Heading"] * { font-size: 1.5rem !important; line-height: 1.32 !important; }   /* 24px */
-            [class~="01-3-Heading"], [class~="01-3-Heading"] * { font-size: 1.25rem !important; line-height: 1.35 !important; }  /* 20px */
-            [class*="02-"], [class*="02-"] *,
-            [class*="03-"], [class*="03-"] *,
-            [class*="04-"], [class*="04-"] *,
-            [class*="05-"], [class*="05-"] *,
-            [class*="06-"], [class*="06-"] *,
-            [class*="07-"], [class*="07-"] * {
-              font-size: 1.125rem !important;  /* 18px */
-              line-height: 1.7 !important;
-            }
-            [class*="08-"], [class*="08-"] * {
-              font-size: 1rem !important;  /* 16px */
-              line-height: 1.75 !important;
-            }
-          }
-        `;
-        doc.head.appendChild(style);
-
-        /* 상단 여백 보정(첫 3개 요소 검사) */
-        let el = doc.body && doc.body.firstElementChild, count=0;
-        while(el && count<3){
-          const cs = doc.defaultView.getComputedStyle(el);
-          const mt = parseFloat(cs.marginTop || '0');
-          if(mt>0){
-            el.style.setProperty('margin-top','0','important');
-            el.style.setProperty('padding-top','0','important');
-          }
-          if(el.classList && el.classList.contains('_1-1-Heading')) break;
-          el = el.nextElementSibling; count++;
-        }
-      }catch(e){ /* 접근 불가 시 무시 */ }
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        injectStylesInto(doc);
+      }catch(e){}
     }
+
     iframe.addEventListener('load', onIframeLoad);
 
-    /* 초기 진입 */
-    document.addEventListener('DOMContentLoaded', function(){
-      updateHeaderSize();
-      loadFromHash();
-      /* 메뉴 이벤트 */
-      menuButtons.forEach(btn => btn.addEventListener('click', ()=> loadSrc(btn.dataset.src, btn)));
+    // 메뉴 클릭
+    menuButtons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        loadSrc(btn.getAttribute('data-src'), btn);
+      });
     });
+
+    // 해시 변경 시 반영
+    window.addEventListener('hashchange', function(){ applyHash(); });
+
+    // 초기 설정
+    document.addEventListener('DOMContentLoaded', function(){
+      measureMenuHeight();
+      applyHash();
+    });
+
+    // 리사이즈 시 메뉴 높이 갱신
+    window.addEventListener('resize', function(){
+      measureMenuHeight();
+    });
+
+    // 메뉴 폭 변화에도 반영
+    if (window.ResizeObserver){
+      var ro = new ResizeObserver(function(){ measureMenuHeight(); });
+      ro.observe(menuList);
+    }
   })();
   </script>
 </body>
