@@ -2,92 +2,77 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>VURIX Mobile 웹 매뉴얼</title>
   <style>
     :root{
-      --header1-h:56px;
-      --header2-h:48px;           /* 기본 메뉴 높이(실제 높이로 스크립트가 덮어씀) */
-      --header2-computed:48px;    /* 실측 메뉴 높이 */
-      --footer-h:40px;
+      --header1-h:56px;   /* 타이틀 바 */
+      --header2-h:48px;   /* 메뉴 바(기본값, 실제 높이로 보정) */
+      --header2-computed: var(--header2-h);
+      --footer-h:40px;    /* 푸터 */
       --bar-bg:#f6f6f6;
       --gh-border:#d0d7de;
       --gh-active:#0969da;
-      --gap-cf:14px;              /* 콘텐츠-푸터 사이 간격 */
-      --scale:1.5;                /* PC 확대 배율 */
+      --gap-cf:14px;      /* 콘텐츠-푸터 사이 여백 */
     }
     *{box-sizing:border-box}
-    html,body{
-      height:100%; margin:0; color:#222; background:#fff;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif;
-    }
+    html,body{height:100%;margin:0;background:#fff;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif}
 
-    /* 상단 타이틀 바 */
+    /* 상단 타이틀 */
     .top-title{
-      position:fixed; top:0; left:0; right:0; height:var(--header1-h);
-      background:var(--bar-bg); display:flex; align-items:center; gap:12px;
-      padding:0 16px; border-bottom:none; z-index:1000;
+      position:fixed;top:0;left:0;right:0;height:var(--header1-h);
+      background:var(--bar-bg);display:flex;align-items:center;gap:12px;
+      padding:0 16px;border-bottom:none;
+      z-index:1000;
     }
-    .title-txt{font-size:18px; font-weight:700; color:#111; user-select:none;}
-    .title-txt img[src*="0_ICON"]{height:1em; width:auto; vertical-align:middle;}
+    .title-text{font-size:18px;font-weight:700;color:#111;white-space:nowrap;}
 
-    /* 상단 메뉴 */
+    /* 상단 메뉴(좌측 정렬, 고정폭 컨테이너 좌정렬) */
     .top-menu{
-      position:fixed; top:var(--header1-h); left:0; right:0;
-      height:auto; min-height:var(--header2-h);
-      background:var(--bar-bg); display:flex; align-items:flex-end;
+      position:fixed;top:var(--header1-h);left:0;right:0;min-height:var(--header2-h);
+      background:var(--bar-bg);
+      display:flex;align-items:flex-end;z-index:999;
       border-bottom:1px solid var(--gh-border);
-      z-index:999; overflow:hidden; /* 스크롤바 차단 */
+      overflow:hidden; /* 스크롤바 차단 */
     }
-    .menu-inner{ width:900px; max-width:100%; margin:0; }
-    .menu-list{
-      display:flex; flex-wrap:nowrap; justify-content:flex-start; align-items:flex-end;
-      gap:16px; padding:0 12px 0 12px; height:48px;
-    }
-    .menu-item{
-      position:relative; background:transparent; border:0; cursor:pointer;
-      padding:0 10px 10px 10px; display:flex; align-items:flex-end;
-      font-size:15px; color:#24292f; white-space:nowrap;
-    }
-    .menu-item.active{ color:#111; font-weight:600; }
-    .menu-item.active::after{ content:""; position:absolute; left:8px; right:8px; bottom:-1px; height:2px; background:var(--gh-active); }
+    .menu-inner{width:900px;max-width:100%;margin:0;padding:0 12px;height:100%;}
+    .menu-list{display:flex;flex-wrap:nowrap;gap:16px;height:100%;align-items:flex-end;justify-content:flex-start !important;}
+    .menu-item{position:relative;background:transparent;border:0;cursor:pointer;
+      padding:0 12px 10px 12px;height:100%;display:flex;align-items:end;
+      font-size:15px;color:#24292f;border-radius:0;white-space:nowrap;}
+    .menu-item:hover{color:#111;}
+    .menu-item.active{color:#111;font-weight:600;}
+    .menu-item.active::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--gh-active);}
 
-    /* 콘텐츠 영역 */
+    /* 콘텐츠 영역: 좌측 여백 20px, 하단 여백 추가 */
     .content-wrap{
-      position:fixed; left:0; right:0;
+      position:fixed;left:0;right:0;
       top:calc(var(--header1-h) + var(--header2-computed));
       bottom:calc(var(--footer-h) + var(--gap-cf));
-      padding-left:20px; background:#fff;
+      padding-left:20px;background:#fff;
     }
-    .content-inner{ position:relative; width:100%; height:100%; }
-    iframe#contentFrame{ width:100%; height:100%; border:none; background:#fff; display:block; }
+    .iframe-box{position:relative;width:100%;height:100%;}
+    iframe#contentFrame{width:100%;height:100%;border:none;background:#fff;display:block;}
 
-    /* 하단 고정바 */
-    .footer{
-      position:fixed; left:0; right:0; bottom:0; height:var(--footer-h);
-      background:#fff; border-top:none; display:flex; align-items:center; justify-content:flex-start;
-      padding-left:20px; font-size:12px; color:#666; z-index:1000;
-    }
+    /* 하단바: 좌측 정렬 */
+    .footer{position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);
+      background:#fff;border-top:none;display:flex;align-items:center;justify-content:flex-start;
+      padding-left:20px;font-size:12px;color:#666;z-index:1000;}
 
-    /* 모바일(임계폭 700px)에서 메뉴 줄바꿈 */
+    /* 모바일(≤700px): 메뉴 줄바꿈, 표 강제맞춤/줄바꿈 */
     @media (max-width:700px){
-      :root{ --header1-h:52px; --footer-h:40px; }
-      .menu-list{ flex-wrap:wrap; row-gap:6px; height:auto; }
-      .menu-item{ font-size:14px; padding:0 8px 10px 8px; }
-      /* 모바일은 바깥 페이지 스크롤 허용 */
-      html,body{ overflow:auto; }
-    }
-
-    /* 데스크톱에선 바깥 스크롤 숨기고 iframe만 스크롤 */
-    @media (min-width:1024px){
-      html,body{ overflow:hidden; }
+      :root{--header1-h:52px;--footer-h:40px;}
+      .menu-list{flex-wrap:wrap;row-gap:6px}
+      .menu-item{font-size:14px;padding:0 10px 10px 10px;}
     }
   </style>
 </head>
 <body>
-  <!-- 상단 -->
-  <header class="top-title"><span class="title-txt">VURIX Mobile</span></header>
-  <nav class="top-menu" aria-label="주 메뉴">
+  <header class="top-title" role="banner">
+    <div class="title-text">VURIX Mobile</div>
+  </header>
+
+  <nav class="top-menu" role="navigation" aria-label="주 메뉴">
     <div class="menu-inner">
       <div class="menu-list">
         <button class="menu-item" data-src="./start.html">시작</button>
@@ -101,123 +86,120 @@
     </div>
   </nav>
 
-  <!-- 중앙 -->
-  <main class="content-wrap">
-    <div class="content-inner">
+  <main class="content-wrap" role="main">
+    <div class="iframe-box">
       <iframe id="contentFrame" title="콘텐츠 프레임" src="" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
   </main>
 
-  <!-- 하단 -->
-  <footer class="footer">©2025 Innodep, Inc.</footer>
+  <footer class="footer" role="contentinfo">©2025 Innodep, Inc.</footer>
 
   <script>
     (function(){
       const iframe = document.getElementById('contentFrame');
       const menuButtons = Array.from(document.querySelectorAll('.menu-item'));
-      const menuList = document.querySelector('.menu-list');
       const topMenu = document.querySelector('.top-menu');
 
-      // 메뉴 높이 실측 → content top 보정
-      function measureMenu(){
+      // 메뉴 클릭 로드
+      function setActive(btn){ menuButtons.forEach(b=>b.classList.toggle('active', b===btn)); }
+      function loadSrc(src, btn){ iframe.src = src; if(btn) setActive(btn); }
+
+      // 초기: 해시 우선, 없으면 '시작'
+      function initialLoad(){
+        const hash = location.hash.replace('#','');
+        const target = hash || 'start.html';
+        const btn = menuButtons.find(b => b.dataset.src.endsWith(target));
+        if(btn) loadSrc(btn.dataset.src, btn);
+      }
+      window.addEventListener('hashchange', initialLoad);
+      document.addEventListener('DOMContentLoaded', initialLoad);
+
+      // 메뉴 높이 → 콘텐츠 시작점 보정
+      function fixMenuHeight(){
         const h = topMenu.getBoundingClientRect().height;
         document.documentElement.style.setProperty('--header2-computed', h + 'px');
       }
+      window.addEventListener('load', fixMenuHeight);
+      window.addEventListener('resize', fixMenuHeight);
+      new ResizeObserver(fixMenuHeight).observe(topMenu);
 
-      // 메뉴 클릭시 iframe 교체 + 해시 갱신
-      function setActive(btn){ menuButtons.forEach(b => b.classList.toggle('active', b===btn)); }
-      function loadSrc(src, btn){
-        iframe.src = src;
-        if (btn) setActive(btn);
-        if (src) location.hash = src.replace('./','');
-      }
-      menuButtons.forEach(btn => btn.addEventListener('click', ()=> loadSrc(btn.dataset.src, btn)));
+      // 모바일 임계폭
+      const isMobile = () => window.matchMedia('(max-width:700px)').matches;
 
-      // 해시 진입 처리
-      function initFromHash(){
-        const hash = (location.hash || '').replace('#','');
-        const btn = menuButtons.find(b => b.dataset.src.includes(hash)) || menuButtons[0];
-        if (btn) loadSrc(btn.dataset.src, btn);
-      }
-
-      // PC 150% 확대: 내부 문서에만 적용
-      const isDesktop = () => window.matchMedia('(min-width:1024px)').matches;
-      const isMobile700 = () => window.matchMedia('(max-width:700px)').matches;
-
-      function injectStyles(doc){
-        // 공통: 첫 제목 여백 제거 + 마진 접힘 방지 + 아이콘 1em
-        const style = doc.createElement('style');
-        style.textContent = `
-          html, body { margin:0; padding:0; }
-          body { display: flow-root !important; }
-          body > *:first-child { margin-top:0 !important; }
-          ._1-1-Heading:first-of-type { margin-top:0 !important; padding-top:0 !important; }
-          img[src*="0_ICON"]{ height:1em !important; width:auto !important; vertical-align:middle; }
-        `;
-        doc.head && doc.head.appendChild(style);
-
-        // PC에서만 내부 확대
-        if (isDesktop()){
-          const b = doc.body;
-          if (b){
-            b.style.zoom = '1.5';
-            b.style.transformOrigin = 'top left';
-            if (!('zoom' in b.style)){
-              b.style.transform = 'scale(1.5)';
-              b.style.width = 'calc(100% / 1.5)';
-            }
-          }
-          // 폭이 줄어들며 축소되는걸 방지: 내부 최소폭 900px
-          const htmlEl = doc.documentElement;
-          if (htmlEl){
-            htmlEl.style.minWidth = '900px';
-          }
-        }else{
-          // 모바일에서는 확대 제거
-          const b = doc.body;
-          if (b){
-            b.style.zoom = '';
-            b.style.transform = '';
-            b.style.width = '';
-          }
-        }
-
-        // 모바일(<=700px)에서 표 100% + 줄바꿈
-        if (isMobile700()){
-          const style2 = doc.createElement('style');
-          style2.textContent = `
-            @media (max-width:700px){
-              table{ width:100% !important; max-width:none !important; table-layout:auto !important; }
-              th, td{
-                white-space: normal !important;
-                overflow-wrap: anywhere !important;
-                word-break: break-word !important;
-                text-overflow: clip !important;
-                padding: 6px;
-              }
-              table img{ max-width:100% !important; height:auto !important; }
-            }
-          `;
-          doc.head && doc.head.appendChild(style2);
-        }
-      }
-
+      // iframe 로드 후 내부 문서 보정
       function onIframeLoad(){
         try{
           const doc = iframe.contentDocument || iframe.contentWindow.document;
-          if (!doc) return;
-          injectStyles(doc);
+          if(!doc) return;
+
+          // 첫 대제목/상단 마진 과다 제거 + 마진 접힘 차단
+          const styleFix = doc.createElement('style');
+          styleFix.textContent = `
+            html, body { margin-top:0 !important; }
+            body { display: flow-root !important; }
+            body > *:first-child { margin-top:0 !important; }
+            ._1-1-Heading:first-of-type { margin-top:0 !important; padding-top:0 !important; }
+            img[src*="0_ICON"] { height:1em; width:auto; vertical-align:middle; }
+            @media (max-width:700px){
+              /* 모바일 표: 강제맞춤 + 줄바꿈 */
+              table { width:100% !important; table-layout:auto !important; }
+              th, td { white-space: normal !important; overflow-wrap:anywhere !important; word-break:break-word !important; text-overflow:clip !important; padding:6px; }
+              table img { max-width:100% !important; height:auto !important; }
+            }
+          `;
+          doc.head && doc.head.appendChild(styleFix);
+
+          // PC(>700px): 인디자인 단락 스타일 폰트 크기 오버라이드
+          if(!isMobile()){
+            const styleMap = doc.createElement('style');
+            styleMap.textContent = `
+              /* 인디자인 단락 스타일 폰트 크기 재정의 (PC 전용) */
+              [class~="01-1-Heading"]{font-size:34px !important; line-height:1.5 !important;}
+[class~="01-2-Heading"]{font-size:25px !important; line-height:1.5 !important;}
+[class~="01-3-Heading"]{font-size:20px !important; line-height:1.5 !important;}
+[class~="02-1-Basic-L"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="02-2-Basic-L-Sub"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="02-3-Basic-L-Center"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="03-1-Num"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="03-2-Num(2-9)"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="03-3-Num(10)"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="04-1-Bull-L"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="04-2-Bull-L-Sub"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="04-3-Bull-L-Sub(H)"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="05-1-Bold"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="05-2-Bold-Sub"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="05-3-Bold-Center"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="05-4-Bold-Bull"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="06-1-Note-B"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="06-2-Note-Bull-L"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="06-3-Info-L"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="07-1-Ring-B"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="07-2-Ring-B-Sub"]{font-size:18px !important; line-height:1.5 !important;}
+[class~="08-1-Small-L"]{font-size:16px !important; line-height:1.5 !important;}
+[class~="08-2-Small-L-Sub"]{font-size:16px !important; line-height:1.5 !important;}
+[class~="08-3-Small-L-Center"]{font-size:16px !important; line-height:1.5 !important;}
+[class~="08-4-Small-B-Center"]{font-size:16px !important; line-height:1.5 !important;}
+[class~="08-5-Small-Bull-L"]{font-size:16px !important; line-height:1.5 !important;}
+            `;
+            doc.head && doc.head.appendChild(styleMap);
+
+            // PC에서 최소 가로폭 보장(글자 축소 방지)
+            const rootHtml = doc.documentElement;
+            const body = doc.body;
+            if(rootHtml) rootHtml.style.minWidth = '900px';
+            if(body) body.style.minWidth = '900px';
+          }
         }catch(e){}
       }
       iframe.addEventListener('load', onIframeLoad);
 
-      // 초기화
-      document.addEventListener('DOMContentLoaded', ()=>{
-        measureMenu();
-        initFromHash();
-      });
-      window.addEventListener('resize', measureMenu);
-      new ResizeObserver(measureMenu).observe(menuList);
+      // 메뉴 클릭
+      menuButtons.forEach(btn => btn.addEventListener('click', () => {
+        const src = btn.dataset.src;
+        loadSrc(src, btn);
+        // 해시도 갱신
+        location.hash = src.replace('./','');
+      }));
     })();
   </script>
 </body>
