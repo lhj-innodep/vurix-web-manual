@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -30,7 +29,7 @@
     }
     .title-txt{font-size:1.125rem;font-weight:700;}
 
-    /* 상단 메뉴 바 */
+    /* 상단 메뉴 바 (깃허브 톤) */
     .top-menu{
       position:fixed;top:var(--header1-h);left:0;right:0;
       height:auto;background:var(--bar-bg);z-index:999;
@@ -110,6 +109,8 @@
       var menuButtons = Array.prototype.slice.call(document.querySelectorAll('.menu-item'));
       var menuList = document.getElementById('menuList');
       var topMenu = document.querySelector('.top-menu');
+      var SCALE = 1.5;       // PC 확대 배율
+      var DESKTOP_BP = 901;  // 데스크톱 적용 임계폭
 
       function setActive(btn){
         menuButtons.forEach(function(b){ b.classList.toggle('active', b===btn); });
@@ -129,30 +130,92 @@
         }catch(e){}
       }
 
+      function isDesktop(){ return window.innerWidth >= DESKTOP_BP; }
+
+      // 바깥 문서 스크롤 정책: 데스크톱에서는 바깥 숨김, iframe만 세로 스크롤
       function applyViewportMode(){
-        var isMobile = window.innerWidth <= 700;
-        document.documentElement.style.overflowY = isMobile ? 'auto' : 'hidden';
-        document.body.style.overflowY = isMobile ? 'auto' : 'hidden';
+        var desk = isDesktop();
+        document.documentElement.style.overflowY = desk ? 'hidden' : 'auto';
+        document.body.style.overflowY = desk ? 'hidden' : 'auto';
         applyHeaderHeight();
       }
 
-      /* override.css를 iframe 내부에 주입 */
-      function injectOverrideCSS(doc){
-        try{
-          var head = doc.head || doc.getElementsByTagName('head')[0];
-          if (!head) return;
-          var link = doc.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = './override.css?v=ovr4'; /* 캐시 우회 */
-          head.appendChild(link);
-        }catch(e){}
+      // iframe 내부에 기본 스타일 주입
+      function injectBaseStyles(doc){
+        var head = doc.head || doc.getElementsByTagName('head')[0];
+        if (!head) return;
+        var base = doc.createElement('style');
+        base.type = 'text/css';
+        base.appendChild(doc.createTextNode([
+          'html, body{margin:0;padding:0;}',
+          'body{display:flow-root;}',
+          'body>*:first-child{margin-top:0 !important;}',
+          '._1-1-Heading:first-of-type{margin-top:0 !important;padding-top:0 !important;}',
+          'img[src*="0_ICON"]{height:1em;width:auto;vertical-align:middle;}'
+        ].join('\n')));
+        head.appendChild(base);
+
+        // 모바일 표 규칙
+        var mo = doc.createElement('style');
+        mo.type = 'text/css';
+        mo.media = 'screen and (max-width: 700px)';
+        mo.appendChild(doc.createTextNode([
+          'table{ width:100% !important; table-layout:auto !important; }',
+          'th,td{ white-space:normal !important; overflow-wrap:anywhere !important; word-break:break-word !important; }',
+          'table img{ max-width:100% !important; height:auto !important; }'
+        ].join('\n')));
+        head.appendChild(mo);
+      }
+
+      // 데스크톱에서만 150% 확대: body 하위에 래퍼를 만들어 transform
+      function applyDesktopScale(doc){
+        if (!doc) return;
+        var body = doc.body;
+        if (!body) return;
+        var head = doc.head || doc.getElementsByTagName('head')[0];
+
+        // 이미 래퍼가 있으면 재사용
+        var wrap = doc.getElementById('zoomRoot');
+        var desk = isDesktop();
+
+        if (desk){
+          if (!wrap){
+            wrap = doc.createElement('div');
+            wrap.id = 'zoomRoot';
+            // 기존 body 자식들을 래퍼로 이동
+            while (body.firstChild){
+              wrap.appendChild(body.firstChild);
+            }
+            body.appendChild(wrap);
+          }
+          // 스타일 적용: 가로폭 보정 + 확대
+          wrap.style.transformOrigin = '0 0';
+          // zoom 우선(Chromium), 파이어폭스 대응으로 transform 병행
+          wrap.style.zoom = String(SCALE);
+          wrap.style.transform = 'scale(' + SCALE + ')';
+          wrap.style.width = 'calc(100% / ' + SCALE + ')';
+          wrap.style.position = 'relative';
+
+          // 파이어폭스에서 transform만 적용될 때 스크롤이 잘 되도록 body 폭을 자동으로
+          body.style.width = '100%';
+        }else{
+          // 모바일/태블릿에서는 래퍼 해제(원복) — 중복 확대 방지
+          if (wrap){
+            while (wrap.firstChild){
+              body.insertBefore(wrap.firstChild, wrap);
+            }
+            wrap.remove();
+          }
+          body.style.zoom = '';
+        }
       }
 
       function onIframeLoad(){
         try{
           var doc = iframe.contentDocument || iframe.contentWindow.document;
           if (!doc) return;
-          injectOverrideCSS(doc);
+          injectBaseStyles(doc);
+          applyDesktopScale(doc);
         }catch(e){}
       }
 
@@ -178,7 +241,15 @@
         applyViewportMode();
         syncFromHash();
       });
-      window.addEventListener('resize', applyViewportMode);
+
+      window.addEventListener('resize', function(){
+        applyViewportMode();
+        try{
+          var doc = iframe.contentDocument || iframe.contentWindow.document;
+          applyDesktopScale(doc);
+        }catch(e){}
+      });
+
       if ('ResizeObserver' in window){
         var ro = new ResizeObserver(function(){ applyHeaderHeight(); });
         ro.observe(menuList);
