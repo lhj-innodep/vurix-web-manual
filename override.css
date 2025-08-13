@@ -1,4 +1,6 @@
+
 /* override.css : 공통 오버라이드 (모든 콘텐츠 HTML에서 공통 적용) */
+/* 기준 폰트: html 100% (대개 16px) */
 html { font-size: 100%; }
 body { margin:0; display: flow-root; } /* 마진 접힘 방지 */
 
@@ -16,28 +18,36 @@ img[src*="0_ICON"]{ height:1em; width:auto; vertical-align:middle; }
   table img{ max-width:100% !important; height:auto !important; }
 }
 
-/* PC(>900px): 요청한 큰 rem 스케일 적용 */
+/* PC(>900px): 큰 rem 스케일 적용 */
+/* 실제 클래스명이 _1-1-Heading, _2-1-Basic-L 식으로 '언더스코어 + 한자리 숫자' 패턴입니다.
+   또한 일부 페이지에는 01-1-Heading처럼 '0'이 붙은 이름이 있을 수 있어 둘 다 매칭합니다. */
 @media (min-width:901px){
   /* 대/중/소 제목 */
+  [class~="_1-1-Heading"], [class~="_1-1-Heading"] *,
   [class~="01-1-Heading"], [class~="01-1-Heading"] * { font-size:4rem !important; line-height:1.15 !important; }
+
+  [class~="_1-2-Heading"], [class~="_1-2-Heading"] *,
   [class~="01-2-Heading"], [class~="01-2-Heading"] * { font-size:3.5rem !important; line-height:1.2 !important; }
+
+  [class~="_1-3-Heading"], [class~="_1-3-Heading"] *,
   [class~="01-3-Heading"], [class~="01-3-Heading"] * { font-size:3rem !important; line-height:1.25 !important; }
 
-  /* 본문/리스트(02~07) */
+  /* 본문/리스트(02~07 계열) — 실제는 '_2-', '_3-'처럼 0 없이 시작하는 패턴 */
+  [class*="_2-"], [class*="_3-"], [class*="_4-"], [class*="_5-"], [class*="_6-"], [class*="_7-"],
   [class*="02-"], [class*="03-"], [class*="04-"], [class*="05-"], [class*="06-"], [class*="07-"]{
     font-size:2rem !important; line-height:1.7 !important;
   }
+  [class*="_2-"] *, [class*="_3-"] *, [class*="_4-"] *, [class*="_5-"] *, [class*="_6-"] *, [class*="_7-"] *,
   [class*="02-"] *, [class*="03-"] *, [class*="04-"] *, [class*="05-"] *, [class*="06-"] *, [class*="07-"] *{
     font-size:inherit !important; line-height:inherit !important;
   }
 
-  /* Small(08계열) */
-  [class*="08-"]{ font-size:1.125rem !important; line-height:1.7 !important; }
-  [class*="08-"] *{ font-size:inherit !important; line-height:inherit !important; }
+  /* Small(08 계열) — 실제는 '_8-' */
+  [class*="_8-"], [class*="08-"]{ font-size:1.125rem !important; line-height:1.7 !important; }
+  [class*="_8-"] *, [class*="08-"] *{ font-size:inherit !important; line-height:inherit !important; }
 
-  /* 가운데 정렬 클래스 보존 */
-  [class~="02-3-Basic-L-Center"], [class~="05-3-Bold-Center"],
-  [class~="08-3-Small-L-Center"], [class~="08-4-Small-B-Center"]{ text-align:center !important; }
+  /* 가운데 정렬 클래스 보존(이름에 Center 포함) */
+  [class*="Center"]{ text-align:center !important; }
 
   /* 좁은 PC 창에서 글자 축소 방지: 최소 폭 보장 */
   html, body { min-width: 900px; }
