@@ -109,8 +109,8 @@
       var menuButtons = Array.prototype.slice.call(document.querySelectorAll('.menu-item'));
       var menuList = document.getElementById('menuList');
       var topMenu = document.querySelector('.top-menu');
-      var SCALE = 1.5;       // PC 확대 배율
-      var DESKTOP_BP = 901;  // 데스크톱 적용 임계폭
+      var DESKTOP_BP = 901;  // 데스크톱 임계폭
+      var SCALE = 1.0;       // 100% (확대 없음)
 
       function setActive(btn){
         menuButtons.forEach(function(b){ b.classList.toggle('active', b===btn); });
@@ -132,7 +132,7 @@
 
       function isDesktop(){ return window.innerWidth >= DESKTOP_BP; }
 
-      // 바깥 문서 스크롤 정책: 데스크톱에서는 바깥 숨김, iframe만 세로 스크롤
+      // 바깥 문서 스크롤 정책: 데스크톱에서도 이중 스크롤 방지를 위해 바깥 숨김
       function applyViewportMode(){
         var desk = isDesktop();
         document.documentElement.style.overflowY = desk ? 'hidden' : 'auto';
@@ -167,47 +167,20 @@
         head.appendChild(mo);
       }
 
-      // 데스크톱에서만 150% 확대: body 하위에 래퍼를 만들어 transform
+      // 데스크톱 확대/원복(현재는 100%이므로 항상 원복)
       function applyDesktopScale(doc){
         if (!doc) return;
         var body = doc.body;
         if (!body) return;
-        var head = doc.head || doc.getElementsByTagName('head')[0];
-
-        // 이미 래퍼가 있으면 재사용
         var wrap = doc.getElementById('zoomRoot');
-        var desk = isDesktop();
-
-        if (desk){
-          if (!wrap){
-            wrap = doc.createElement('div');
-            wrap.id = 'zoomRoot';
-            // 기존 body 자식들을 래퍼로 이동
-            while (body.firstChild){
-              wrap.appendChild(body.firstChild);
-            }
-            body.appendChild(wrap);
+        // SCALE > 1일 때만 확대. 현재 1.0 이므로 항상 원복.
+        if (wrap){
+          while (wrap.firstChild){
+            body.insertBefore(wrap.firstChild, wrap);
           }
-          // 스타일 적용: 가로폭 보정 + 확대
-          wrap.style.transformOrigin = '0 0';
-          // zoom 우선(Chromium), 파이어폭스 대응으로 transform 병행
-          wrap.style.zoom = String(SCALE);
-          wrap.style.transform = 'scale(' + SCALE + ')';
-          wrap.style.width = 'calc(100% / ' + SCALE + ')';
-          wrap.style.position = 'relative';
-
-          // 파이어폭스에서 transform만 적용될 때 스크롤이 잘 되도록 body 폭을 자동으로
-          body.style.width = '100%';
-        }else{
-          // 모바일/태블릿에서는 래퍼 해제(원복) — 중복 확대 방지
-          if (wrap){
-            while (wrap.firstChild){
-              body.insertBefore(wrap.firstChild, wrap);
-            }
-            wrap.remove();
-          }
-          body.style.zoom = '';
+          wrap.remove();
         }
+        body.style.zoom = '';
       }
 
       function onIframeLoad(){
@@ -241,7 +214,6 @@
         applyViewportMode();
         syncFromHash();
       });
-
       window.addEventListener('resize', function(){
         applyViewportMode();
         try{
