@@ -18,10 +18,9 @@
     *{box-sizing:border-box}
     html{font-size:100%;}
     html,body{height:100%;margin:0;color:#222;background:#fff;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Apple Gothic","Malgun Gothic","맑은 고딕",Arial,sans-serif;
     }
 
-    /* 상단 타이틀 바 */
     .top-title{
       position:fixed;top:0;left:0;right:0;height:var(--header1-h);
       background:var(--bar-bg);display:flex;align-items:center;
@@ -29,7 +28,6 @@
     }
     .title-txt{font-size:1.125rem;font-weight:700;}
 
-    /* 상단 메뉴 바 */
     .top-menu{
       position:fixed;top:var(--header1-h);left:0;right:0;
       height:auto;background:var(--bar-bg);z-index:999;
@@ -52,7 +50,6 @@
     .menu-item.active{color:#111;font-weight:600;position:relative;}
     .menu-item.active::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--active);}
 
-    /* 콘텐츠 영역 */
     .content-wrap{
       position:fixed;left:0;right:0;
       top:calc(var(--header1-h) + var(--header2-computed));
@@ -62,14 +59,12 @@
     .content-inner{position:relative;width:100%;height:100%;}
     iframe#contentFrame{width:100%;height:100%;border:none;background:#fff;display:block;}
 
-    /* 푸터 */
     .footer{
       position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);
       background:#fff;border-top:none;display:flex;align-items:center;
       justify-content:flex-start;padding-left:5px;font-size:0.75rem;color:#666;z-index:1000;
     }
 
-    /* 반응형: 모바일에서 메뉴 줄바꿈 */
     @media (max-width: 700px){
       .menu-list{flex-wrap:wrap;row-gap:6px;height:auto;padding:6px 12px;}
       .menu-item{height:38px;padding-bottom:6px;}
@@ -77,7 +72,6 @@
   </style>
 </head>
 <body>
-  <!-- 상단 두 줄 -->
   <header class="top-title" role="banner">
     <div class="title-txt">VURIX Mobile</div>
   </header>
@@ -93,14 +87,12 @@
     </div>
   </nav>
 
-  <!-- 중앙 콘텐츠 -->
   <main class="content-wrap" role="main">
     <div class="content-inner">
       <iframe id="contentFrame" title="콘텐츠 프레임" src="" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
   </main>
 
-  <!-- 하단바 -->
   <footer class="footer" role="contentinfo">©2025 Innodep, Inc.</footer>
 
   <script>
@@ -109,7 +101,7 @@
       var menuButtons = Array.prototype.slice.call(document.querySelectorAll('.menu-item'));
       var menuList = document.getElementById('menuList');
       var topMenu = document.querySelector('.top-menu');
-      var SCALE = 1.25;      // PC 확대 배율 (125%)
+      var SCALE = 1.25;      // PC 확대 배율
       var DESKTOP_BP = 901;  // 데스크톱 적용 임계폭
 
       function setActive(btn){
@@ -132,7 +124,6 @@
 
       function isDesktop(){ return window.innerWidth >= DESKTOP_BP; }
 
-      // 바깥 문서 스크롤 정책: 데스크톱에서는 바깥 숨기고 iframe만 세로 스크롤
       function applyViewportMode(){
         var desk = isDesktop();
         document.documentElement.style.overflowY = desk ? 'hidden' : 'auto';
@@ -140,10 +131,10 @@
         applyHeaderHeight();
       }
 
-      // iframe 내부에 기본 스타일 주입
       function injectBaseStyles(doc){
         var head = doc.head || doc.getElementsByTagName('head')[0];
         if (!head) return;
+
         var base = doc.createElement('style');
         base.type = 'text/css';
         base.appendChild(doc.createTextNode([
@@ -151,28 +142,32 @@
           'body{display:flow-root;}',
           'body>*:first-child{margin-top:0 !important;}',
           '._1-1-Heading:first-of-type{margin-top:0 !important;padding-top:0 !important;}',
-          'img[src*="0_ICON"]{height:1em;width:auto;vertical-align:middle;}'
+          // 0_ICON 강제 1em (대소문자 무시 + data-src까지)
+          'img[src*="0_ICON" i], img[data-src*="0_ICON" i]{height:1em !important; max-height:1em !important; width:auto !important; vertical-align:middle !important; object-fit:contain;}',
+          // 세 개 파일명도 보강 매칭
+          'img[src*="0_ICON_0_NOTE_1_RF" i], img[src*="0_ICON_0_NOTE_2_ATT" i], img[src*="0_ICON_0_NOTE_3_WA" i]{height:1em !important; width:auto !important;}'
         ].join('\n')));
         head.appendChild(base);
 
-        // 모바일 표 규칙
+        // 모바일 표 규칙(아이콘 제외)
         var mo = doc.createElement('style');
         mo.type = 'text/css';
         mo.media = 'screen and (max-width: 700px)';
         mo.appendChild(doc.createTextNode([
           'table{ width:100% !important; table-layout:auto !important; }',
           'th,td{ white-space:normal !important; overflow-wrap:anywhere !important; word-break:break-word !important; }',
-          'table img{ max-width:100% !important; height:auto !important; }'
+          // 아이콘 제외하고만 반응형 이미지
+          'table img:not([src*="0_ICON" i]):not([data-src*="0_ICON" i]){ max-width:100% !important; height:auto !important; }',
+          // 아이콘은 1em 고정 유지
+          'img[src*="0_ICON" i], img[data-src*="0_ICON" i]{ height:1em !important; max-height:1em !important; width:auto !important; }'
         ].join('\n')));
         head.appendChild(mo);
       }
 
-      // 데스크톱에서만 125% 확대: body 하위에 래퍼를 만들어 transform
       function applyDesktopScale(doc){
         if (!doc) return;
         var body = doc.body;
         if (!body) return;
-        var head = doc.head || doc.getElementsByTagName('head')[0];
 
         var wrap = doc.getElementById('zoomRoot');
         var desk = isDesktop();
@@ -181,26 +176,18 @@
           if (!wrap){
             wrap = doc.createElement('div');
             wrap.id = 'zoomRoot';
-            // 기존 body 자식들을 래퍼로 이동
-            while (body.firstChild){
-              wrap.appendChild(body.firstChild);
-            }
+            while (body.firstChild){ wrap.appendChild(body.firstChild); }
             body.appendChild(wrap);
           }
-          // 스타일 적용: 가로폭 보정 + 확대
           wrap.style.transformOrigin = '0 0';
-          wrap.style.zoom = String(SCALE);                      // Chromium
-          wrap.style.transform = 'scale(' + SCALE + ')';        // Firefox
+          wrap.style.zoom = String(SCALE);
+          wrap.style.transform = 'scale(' + SCALE + ')';
           wrap.style.width = 'calc(100% / ' + SCALE + ')';
           wrap.style.position = 'relative';
-
           body.style.width = '100%';
         }else{
-          // 모바일/태블릿에서는 래퍼 해제(원복)
           if (wrap){
-            while (wrap.firstChild){
-              body.insertBefore(wrap.firstChild, wrap);
-            }
+            while (wrap.firstChild){ body.insertBefore(wrap.firstChild, wrap); }
             wrap.remove();
           }
           body.style.zoom = '';
