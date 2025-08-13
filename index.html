@@ -7,90 +7,78 @@
   <style>
     :root{
       --header1-h:56px;   /* 타이틀 바 */
-      --header2-h:56px;   /* 메뉴 바 (여유 높이) */
+      --header2-h:56px;   /* 기본 메뉴 바 높이 (모바일 줄바꿈시 동적 보정) */
+      --header2-computed:56px;
       --footer-h:40px;    /* 푸터 */
       --bar-bg:#f6f6f6;
       --gh-border:#d0d7de;
       --gh-active:#0969da;
-      --pc-min-width:900px; /* PC 최소 가시 폭 */
-      --scale:1.5;          /* PC 확대 배율 */
+      --pc-scale:1.5;     /* PC 확대 배율 */
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:#fff;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif}
+    html,body{height:100%;margin:0;background:#fff;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",Arial,sans-serif;}
 
     /* 상단 타이틀 */
     .top-title{
       position:fixed;top:0;left:0;right:0;height:var(--header1-h);
       background:var(--bar-bg);display:flex;align-items:center;gap:12px;
-      padding:0 16px;border-bottom:none;
+      padding:0 16px;border-bottom:none; /* 줄 제거 */
       z-index:1000;
     }
-    .title-btn{font-size:18px;font-weight:700;color:#111;text-decoration:none;cursor:default;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;}
-    .title-btn img[src*="0_ICON"]{height:1em;width:auto;vertical-align:middle;}
+    .title-text{font-size:18px;font-weight:700;color:#111;white-space:nowrap;}
 
     /* 상단 메뉴 (GitHub 스타일 탭) */
     .top-menu{
-      position:fixed;top:var(--header1-h);left:0;right:0;min-height:var(--header2-h);
+      position:fixed;top:var(--header1-h);left:0;right:0;
       background:var(--bar-bg);display:flex;align-items:end;z-index:999;
       border-bottom:1px solid var(--gh-border);
-      overflow:visible;
+      overflow-x:hidden;
     }
-    .menu-list{
-      display:flex;gap:16px;padding:0 12px 0 12px;min-height:var(--header2-h);align-items:end;
-      flex-wrap:wrap; /* 모바일/좁은 창에서 줄바꿈 */
+    .menu-inner{
+      width:900px; /* 고정 폭 구성일 경우 */
+      max-width:100%;
+      display:flex;align-items:end;gap:16px;padding:0 12px;height:var(--header2-computed);
+      flex-wrap:nowrap;
     }
     .menu-item{
       position:relative;background:transparent;border:0;cursor:pointer;
-      padding:0 12px 12px 12px;display:flex;align-items:end;
-      font-size:15px;color:#24292f;border-radius:0;white-space:nowrap;
+      padding:0 10px 12px 10px;height:100%;display:flex;align-items:end;
+      font-size:15px;color:#24292f;white-space:nowrap;background:none;
     }
     .menu-item:hover{color:#111;}
     .menu-item.active{color:#111;font-weight:600;}
-    .menu-item.active::after{
-      content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--gh-active);
-    }
+    .menu-item.active::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--gh-active);}
 
-    /* 콘텐츠 영역 */
+    /* 콘텐츠 영역: 화면 가득 차도록 고정 */
     .content-wrap{
       position:fixed;left:0;right:0;
-      top:calc(var(--header1-h) + var(--header2-h));
-      bottom:var(--footer-h);
+      top:calc(var(--header1-h) + var(--header2-computed));bottom:var(--footer-h);
       padding-left:20px;background:#fff;
     }
-    .iframe-outer{
-      position:relative;width:100%;height:100%;
-    }
-    iframe#iframe{
-      width:100%;height:100%;border:none;background:#fff;display:block;
-    }
+    .iframe-outer{position:relative;width:100%;height:100%;}
+    .iframe-inner{width:100%;height:100%;border:none;background:#fff;display:block;}
 
-    /* 푸터 */
+    /* 하단바 */
     .footer{
       position:fixed;left:0;right:0;bottom:0;height:var(--footer-h);
-      background:#fff;border-top:none;
-      display:flex;align-items:center;justify-content:flex-start;
+      background:#fff;border-top:none;display:flex;align-items:center;justify-content:flex-start;
       padding-left:20px;font-size:12px;color:#666;z-index:1000;
     }
 
-    @media (min-width:1024px){
-      .menu-list{flex-wrap:nowrap;} /* PC에서는 한 줄 */
-    }
-
     @media (max-width: 768px){
-      :root{--header1-h:52px;--header2-h:56px;--footer-h:40px;}
-      .menu-item{font-size:14px;padding:0 10px 12px 10px;}
-      .title-btn{font-size:17px;}
+      :root{--header1-h:52px;--header2-h:48px;--footer-h:40px;}
+      .menu-inner{flex-wrap:wrap;row-gap:6px;align-items:center;height:auto;}
+      .menu-item{font-size:14px;padding:4px 8px 8px 8px;}
     }
   </style>
 </head>
 <body>
   <!-- 상단 고정바 -->
   <header class="top-title" role="banner">
-    <!-- 타이틀 클릭시 인덱스 로드 기능 제거 -->
-    <span class="title-btn"><span>VURIX Mobile</span></span>
+    <div class="title-text">VURIX Mobile</div>
   </header>
   <nav class="top-menu" role="navigation" aria-label="주 메뉴">
-    <div class="menu-list">
+    <div class="menu-inner" id="menuInner">
       <button class="menu-item" data-src="./start.html">시작</button>
       <button class="menu-item" data-src="./live.html">실시간 영상</button>
       <button class="menu-item" data-src="./recorded.html">녹화 영상</button>
@@ -104,7 +92,7 @@
   <!-- 중앙 콘텐츠 -->
   <main class="content-wrap" role="main">
     <div class="iframe-outer">
-      <iframe id="iframe" title="콘텐츠 프레임" src="" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      <iframe class="iframe-inner" id="contentFrame" title="콘텐츠 프레임" src="" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
   </main>
 
@@ -113,82 +101,97 @@
 
   <script>
     (function(){
-      const iframe = document.getElementById('iframe');
+      const iframe = document.getElementById('contentFrame');
       const menuButtons = Array.from(document.querySelectorAll('.menu-item'));
+      const menuInner = document.getElementById('menuInner');
+      const mqPC = window.matchMedia('(min-width: 1024px)');
 
-      function setActive(btn){
-        menuButtons.forEach(b=>b.classList.toggle('active', b===btn));
-      }
-      function loadSrc(src, btn){
-        iframe.src = src;
-        if(btn) setActive(btn);
-        // 해시 업데이트 (깃허브 페이지에서 새로고침해도 동일 탭 유지)
-        try { history.replaceState(null, '', '#' + src.replace('./','')); } catch(e){}
-      }
-
-      // 해시 라우팅 지원 (#start.html 등)
-      function initialFromHash(){
-        const hash = (location.hash || '').replace(/^#/, '');
-        const targetBtn = menuButtons.find(b => b.dataset.src.replace('./','') === hash);
-        if(targetBtn) return targetBtn;
-        // 기본은 시작
-        return menuButtons.find(b => b.textContent.trim()==='시작') || menuButtons[0];
+      // 해시 경로 -> 파일명만 추출
+      function hashToPath(h){
+        const v = (h || '').replace(/^#/, '').trim();
+        if(!v) return './start.html';
+        // 안전 처리: 지정된 메뉴 외엔 start.html
+        const allow = new Set(['start.html','live.html','recorded.html','event.html','setup.html','other.html','info.html','index.html']);
+        return allow.has(v) ? './'+v : './start.html';
       }
 
-      // 초기 로드
-      document.addEventListener('DOMContentLoaded', ()=>{
-        const btn = initialFromHash();
-        loadSrc(btn.dataset.src, btn);
-      });
+      function setActiveBySrc(src){
+        menuButtons.forEach(b=>b.classList.toggle('active', b.dataset.src === src));
+      }
 
-      // 메뉴 클릭
+      function loadByHash(){
+        const src = hashToPath(location.hash);
+        if(iframe.getAttribute('src') !== src){
+          iframe.setAttribute('src', src);
+        }
+        setActiveBySrc(src);
+      }
+
+      // 메뉴 클릭 시 해시 갱신
       menuButtons.forEach(btn=>{
-        btn.addEventListener('click', ()=> loadSrc(btn.dataset.src, btn));
+        btn.addEventListener('click', ()=>{
+          const src = btn.dataset.src;
+          const hash = src.replace('./','');
+          if(location.hash !== '#'+hash){
+            history.replaceState(null,'','#'+hash);
+          }
+          loadByHash();
+        });
       });
 
-      // PC에서만 내부 문서 150% 확대 + 최소 폭 보장
-      const mqPC = window.matchMedia('(min-width:1024px)');
-      function enhanceInside(){
+      // 메뉴 실제 높이 측정 -> CSS 변수 반영
+      function measureMenuHeight(){
+        const h = menuInner ? menuInner.offsetHeight : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header2-h')) || 56;
+        document.documentElement.style.setProperty('--header2-computed', h + 'px');
+      }
+      const ro = new ResizeObserver(measureMenuHeight);
+      ro.observe(menuInner);
+
+      // PC에서만 내부 문서 확대
+      function enhanceIframe(){
         try{
           const doc = iframe.contentDocument || iframe.contentWindow.document;
           if(!doc) return;
-
           // 아이콘 자동 리사이즈
           doc.querySelectorAll('img[src*="0_ICON"]').forEach(img=>{
             img.style.height='1em'; img.style.width='auto'; img.style.verticalAlign='middle';
           });
 
-          // 확대
           if(mqPC.matches){
-            const scale = 1.5;
-            const body = doc.body, html = doc.documentElement;
-            if(body){
-              body.style.zoom = scale;               // 크롬/엣지
-              body.style.transformOrigin = 'top left';
-              if(!('zoom' in body.style) || body.style.zoom === ''){
-                // 폴백
-                body.style.transform = 'scale('+scale+')';
-                body.style.width = 'calc(100% / '+scale+')';
-              }
-              // 최소 가시 폭
-              body.style.minWidth = getComputedStyle(document.documentElement).getPropertyValue('--pc-min-width') || '900px';
-              html && (html.style.minWidth = body.style.minWidth);
+            // zoom 우선
+            if(doc.body){ doc.body.style.zoom = 'var(--pc-scale)'; }
+            if(doc.documentElement){ doc.documentElement.style.zoom = 'var(--pc-scale)'; }
+
+            // zoom이 먹지 않는 브라우저(드물지만) 대비 transform 폴백
+            const applied = (doc.body && getComputedStyle(doc.body).zoom !== 'normal' && getComputedStyle(doc.body).zoom !== '1' ) ||
+                            (doc.documentElement && getComputedStyle(doc.documentElement).zoom !== 'normal' && getComputedStyle(doc.documentElement).zoom !== '1' );
+            if(!applied && doc.body){
+              doc.body.style.transform = 'scale(1.5)';
+              doc.body.style.transformOrigin = 'top left';
+              doc.body.style.width = 'calc(100% / 1.5)'; // 가로 보정
+            }
+            // 최소 보이는 폭 보장
+            if(doc.documentElement){
+              doc.documentElement.style.minWidth = '900px';
+            }
+            if(doc.body){
+              doc.body.style.minWidth = '900px';
             }
           }else{
-            // 모바일 원복
-            const body = doc.body, html = doc.documentElement;
-            if(body){
-              body.style.zoom = '';
-              body.style.transform = '';
-              body.style.width = '';
-              body.style.minWidth = '';
-            }
-            if(html){ html.style.minWidth=''; }
+            // 모바일: 원배율
+            if(doc.body){ doc.body.style.zoom = ''; doc.body.style.transform=''; doc.body.style.width=''; doc.body.style.minWidth=''; }
+            if(doc.documentElement){ doc.documentElement.style.zoom=''; doc.documentElement.style.minWidth=''; }
           }
-        }catch(e){}
+        }catch(e){ /* 접근 불가시 무시 */ }
       }
-      iframe.addEventListener('load', enhanceInside);
-      mqPC.addEventListener ? mqPC.addEventListener('change', enhanceInside) : mqPC.addListener(enhanceInside);
+
+      iframe.addEventListener('load', enhanceIframe);
+
+      window.addEventListener('hashchange', loadByHash);
+      document.addEventListener('DOMContentLoaded', ()=>{
+        measureMenuHeight();
+        loadByHash();
+      });
     })();
   </script>
 </body>
