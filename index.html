@@ -249,7 +249,10 @@
           iframe.style.height = '100%';
           iframe.style.width = '100%';
         }catch(e){}
-      }
+      
+            applyMobileTableFit(doc);
+          }
+          }
       iframe.addEventListener('load', onIframeLoad);
 
       // 윈도우 리사이즈 시 메뉴 높이 보정 및 데스크톱/모바일 확대 전환
@@ -268,6 +271,28 @@
       isDesktop.addEventListener ? isDesktop.addEventListener('change', onResize)
                                  : isDesktop.addListener(onResize);
     })();
+  
+      function applyMobileTableFit(doc){
+        try{
+          const isMobile = window.matchMedia('(max-width: 768px)').matches;
+          if(!isMobile) return; // PC 제외
+          const style = doc.createElement('style');
+          style.textContent = `
+            @media (max-width: 768px){
+              table{ width:100% !important; table-layout:fixed !important; border-collapse: collapse; }
+              th, td{
+                overflow:hidden;
+                text-overflow:ellipsis;
+                white-space:nowrap;
+                padding:6px;
+              }
+              table img{ max-width:100% !important; height:auto !important; }
+            }
+          `;
+          doc.head && doc.head.appendChild(style);
+        }catch(e){}
+      }
+
   </script>
 </body>
 </html>
