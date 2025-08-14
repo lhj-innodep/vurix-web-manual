@@ -206,10 +206,16 @@
           const headingEls = doc.querySelectorAll('._1-1-Heading');
           headingEls.forEach(el => { el.style.marginTop = '0'; });
 
+          // PC 화면 확대 적용
+          if (window.innerWidth > 900) {
+            doc.documentElement.style.transform = 'scale(1.5)';
+            doc.documentElement.style.transformOrigin = 'top center';
+          }
+          const scale = (window.innerWidth > 900) ? 1.5 : 1;
           // 높이 계산
           const body = doc.body, html = doc.documentElement;
           const h = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-          viewer.style.height = h + 'px';
+          viewer.style.height = (h * scale) + 'px';
         } catch (_) {}
       }
 
