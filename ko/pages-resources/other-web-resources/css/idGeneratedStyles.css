@@ -1,0 +1,508 @@
+body, div, dl, dt, dd, h1, h2, h3, h4, h5, h6, p, pre, code, blockquote, figure {
+	margin:0;
+	padding:0;
+	border-width:0;
+}
+body {
+	-epub-hyphens:auto;
+}
+div.Chapter-2-White--T- {
+	border-style:solid;
+}
+img.UI_img_0-5 {
+	border-style:solid;
+}
+img.기본-그래픽-프레임 {
+	border-style:solid;
+}
+div.기본-텍스트-프레임 {
+	border-style:solid;
+}
+table.이미지-표 {
+	border-collapse:collapse;
+	border-color:#000000;
+	border-style:none;
+	border-width:1px;
+	margin-bottom:3px;
+	margin-top:3px;
+}
+td.이미지-표, th.이미지-표 {
+	border-left-width:1px;
+	border-left-style:solid;
+	border-left-color:#000000;
+	border-top-width:1px;
+	border-top-style:solid;
+	border-top-color:#000000;
+	border-right-width:1px;
+	border-right-style:solid;
+	border-right-color:#000000;
+	border-bottom-width:1px;
+	border-bottom-style:solid;
+	border-bottom-color:#000000;
+	padding-top:1px;
+	padding-bottom:1px;
+	padding-left:1px;
+	padding-right:1px;
+	vertical-align:top;
+}
+table.참고-표 {
+	border-collapse:collapse;
+	border-style:solid;
+	border-width:1px;
+	margin-bottom:9px;
+	margin-top:6px;
+}
+td.참고-표, th.참고-표 {
+	border-left-width:1px;
+	border-left-style:solid;
+	border-left-color:#000000;
+	border-top-width:1px;
+	border-top-style:solid;
+	border-top-color:#000000;
+	border-right-width:1px;
+	border-right-style:solid;
+	border-right-color:#000000;
+	border-bottom-width:1px;
+	border-bottom-style:solid;
+	border-bottom-color:#000000;
+	padding-top:1px;
+	padding-bottom:1px;
+	padding-left:1px;
+	padding-right:1px;
+	vertical-align:top;
+}
+td.이미지-셀 {
+	border-bottom-style:none;
+	border-bottom-width:0px;
+	border-left-style:none;
+	border-left-width:0px;
+	border-right-style:none;
+	border-right-width:0px;
+	border-top-style:none;
+	border-top-width:0px;
+	padding-bottom:0px;
+	padding-left:0px;
+	padding-right:0px;
+	padding-top:0px;
+	vertical-align:middle;
+}
+td.참고-셀 {
+	border-bottom-color:#dddddd;
+	border-bottom-style:solid;
+	border-bottom-width:1px;
+	border-left-color:#dddddd;
+	border-left-style:solid;
+	border-left-width:1px;
+	border-right-color:#dddddd;
+	border-right-style:solid;
+	border-right-width:1px;
+	border-top-color:#dddddd;
+	border-top-style:solid;
+	border-top-width:1px;
+	padding-bottom:9px;
+	padding-left:9px;
+	padding-right:9px;
+	padding-top:9px;
+	vertical-align:middle;
+}
+p._1-0-Chapter {
+	color:#ffffff;
+	font-family:"Pretendard Black", sans-serif;
+	font-size:48px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:900;
+	line-height:1.25;
+	margin-bottom:0;
+	margin-left:14px;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p._1-1-Heading {
+	-epub-hyphens:none;
+	color:#0068b4;
+	font-family:"Pretendard Black", sans-serif;
+	font-size:24px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:900;
+	line-height:1.5;
+	margin-bottom:3px;
+	margin-left:0;
+	margin-right:0;
+	margin-top:37px;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p._1-2-Heading {
+	-epub-hyphens:none;
+	color:#0068b4;
+	font-family:"Pretendard Medium", sans-serif;
+	font-size:18px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:500;
+	line-height:1.389;
+	margin-bottom:3px;
+	margin-left:0;
+	margin-right:0;
+	margin-top:17px;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p._1-3-Heading {
+	-epub-hyphens:none;
+	color:#0068b4;
+	font-family:"Pretendard Medium", sans-serif;
+	font-size:12px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:500;
+	line-height:1.5;
+	margin-bottom:3px;
+	margin-left:0;
+	margin-right:0;
+	margin-top:11px;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p._2-1-Basic-L {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Pretendard Light", sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:300;
+	line-height:1.636;
+	margin-bottom:3px;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p._3-1-Num {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Pretendard Light", sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:300;
+	line-height:1.636;
+	list-style-position:outside;
+	list-style-type:decimal;
+	margin-bottom:3px;
+	margin-left:23px;
+	margin-right:0;
+	margin-top:6px;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:-14px;
+	text-transform:none;
+	widows:1;
+}
+p._3-2-Num-2-9- {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Pretendard Light", sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:300;
+	line-height:1.636;
+	list-style-position:outside;
+	list-style-type:decimal;
+	margin-bottom:3px;
+	margin-left:23px;
+	margin-right:0;
+	margin-top:6px;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:-14px;
+	text-transform:none;
+	widows:1;
+}
+p._3-3-Num-10- {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Pretendard Light", sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:300;
+	line-height:1.636;
+	list-style-position:outside;
+	list-style-type:decimal;
+	margin-bottom:3px;
+	margin-left:23px;
+	margin-right:0;
+	margin-top:6px;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:-17px;
+	text-transform:none;
+	widows:1;
+}
+p._4-2-Bull-L-Sub {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Pretendard Light", sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:300;
+	line-height:1.636;
+	list-style-position:outside;
+	list-style-type:disc;
+	margin-bottom:3px;
+	margin-left:40px;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:-11px;
+	text-transform:none;
+	widows:1;
+}
+p._5-1-Bold {
+	color:#000000;
+	font-family:Pretendard, sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:bold;
+	line-height:1.636;
+	margin-bottom:3px;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p._6-1-Note-B {
+	-epub-hyphens:none;
+	color:#003077;
+	font-family:Pretendard, sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:bold;
+	line-height:1.636;
+	margin-bottom:3px;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p._6-2-Note-Bull-L {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Pretendard Light", sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:300;
+	line-height:1.636;
+	list-style-position:outside;
+	list-style-type:disc;
+	margin-bottom:3px;
+	margin-left:20px;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:-11px;
+	text-transform:none;
+	widows:1;
+}
+p._9-1-Table {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Pretendard Light", sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:300;
+	line-height:1.2;
+	margin-bottom:6px;
+	margin-left:0;
+	margin-right:0;
+	margin-top:3px;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p._9-2-Table-Note {
+	-epub-hyphens:none;
+	color:#000000;
+	font-family:"Pretendard Light", sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:300;
+	line-height:1.2;
+	margin-bottom:3px;
+	margin-left:0;
+	margin-right:0;
+	margin-top:11px;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:justify;
+	text-align-last:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+p._0-1-Img-Rright {
+	color:#000000;
+	font-family:"Pretendard Light", sans-serif;
+	font-size:11px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:300;
+	line-height:1.2;
+	margin-bottom:0;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:right;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+span.UI_L {
+	color:#000000;
+	font-style:normal;
+	font-weight:bold;
+}
+span._idGenBNMarker-1 {
+	display:inline-block;
+	text-indent:0;
+	width:14px;
+}
+span._idGenBNMarker-2 {
+	display:inline-block;
+	text-indent:0;
+	width:11px;
+}
+span._idGenBNMarker-3 {
+	display:inline-block;
+	text-indent:0;
+	width:17px;
+}
+p._idGenParaOverride-1 {
+	page-break-after:always;
+}
+col._idGenTableRowColumn-1 {
+	width:454px;
+}
+tr._idGenTableRowColumn-2 {
+	min-height:227px;
+}
+tr._idGenTableRowColumn-3 {
+	min-height:33px;
+}
+tr._idGenTableRowColumn-4 {
+	min-height:72px;
+}
+tr._idGenTableRowColumn-5 {
+	min-height:69px;
+}
+img._idGenObjectAttribute-1 {
+	height:226px;
+	width:425px;
+}
+img._idGenObjectAttribute-2 {
+	height:9px;
+	width:11px;
+}
+img._idGenObjectAttribute-3 {
+	height:14px;
+	width:16px;
+}
