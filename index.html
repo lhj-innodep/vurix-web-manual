@@ -8,11 +8,15 @@
     :root{
       --container-width: 900px;         /* PC 기준 폭 */
       --container-pad: 16px;
-      --header-row-height: 56px;        /* 상단 1줄 */
+
+      /* PC: 상단 1줄 */
+      --header-row-height: 56px;
       --header-height: var(--header-row-height);
+
       --footer-height: 56px;
-      --bg-topbar: #f6f6f6;             /* 좌우 동일 색 */
-      --bg-content: #ffffff;
+
+      --bg-topbar: #f6f6f6;             /* 상단바 배경 */
+      --bg-content: #ffffff;            /* 본문/하단 배경 */
       --text: #24292e;
       --muted: #6a737d;
       --accent: #3366ff;                /* 하이라이트 컬러 */
@@ -32,24 +36,25 @@
     /* 상단바(전체폭 배경) */
     header.header{
       position: fixed; top: 0; left: 0; right: 0;
-      height: var(--header-row-height);
+      height: var(--header-height);
       background: var(--bg-topbar);
       z-index: 1000;
       border-bottom: 1px solid var(--line);
     }
+
+    /* PC: 1줄 2열(좌 타이틀 / 우 메뉴) */
     .header-inner{
       height: 100%;
       padding: 0 var(--container-pad);
       display: grid;
-      grid-template-columns: auto 1fr;  /* 좌: 타이틀 / 우: 메뉴 */
+      grid-template-columns: auto 1fr;
       align-items: center;
       gap: 16px;
     }
 
-    /* 타이틀(PC 기본) */
     .title-row{ font-size: 18px; font-weight: 700; letter-spacing: .2px; white-space: nowrap; }
 
-    /* 메뉴(PC 기본, 탭 스타일) */
+    /* 메뉴: 탭 스타일 */
     .menu-row{ display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
     .menu-row a{
       position: relative;
@@ -95,31 +100,40 @@
       border-top: 1px solid var(--line);
     }
 
-    /* ===== 모바일 튜닝 (≤900px) ===== */
+    /* ===== 모바일(≤900px): 2줄 헤더(1행 타이틀 / 2행 메뉴) ===== */
     @media (max-width: 900px){
       :root{
         --container-width: 700px;      /* 요청: 모바일 700px */
-        --header-row-height: 48px;     /* 상단바 낮춤 */
-        --header-height: var(--header-row-height);
+        --header-title-h: 44px;        /* 1행 타이틀 높이 */
+        --header-menu-h: 44px;         /* 2행 메뉴 높이 */
+        --header-height: calc(var(--header-title-h) + var(--header-menu-h));
       }
+
       .header-inner{
-        padding: 0 10px;               /* 좌우 패딩 축소 */
-        gap: 10px;
+        padding: 0 10px;
+        gap: 0;
+        display: grid;
+        grid-template-columns: 1fr;                /* 한 열로 */
+        grid-template-rows: var(--header-title-h) var(--header-menu-h); /* 두 행 */
+        align-items: center;
       }
-      .title-row{ font-size: 16px; }   /* 타이틀 축소 */
+      .title-row{
+        font-size: 16px;
+        display: flex; align-items: center;
+      }
       .menu-row{
-        justify-content: flex-start;   /* 왼쪽부터 나열 */
+        justify-content: center;                    /* 가운데 정렬 */
         gap: 10px;
-        flex-wrap: nowrap;             /* 한 줄 유지 */
-        overflow-x: auto;              /* 넘치면 가로 스크롤 */
+        flex-wrap: nowrap;                          /* 한 줄 유지 */
+        overflow-x: auto;                           /* 넘치면 가로 스크롤 */
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
       }
-      .menu-row::-webkit-scrollbar{ display: none; } /* 스크롤바 미노출 */
+      .menu-row::-webkit-scrollbar{ display: none; }
       .menu-row a{
-        padding: 8px 6px;              /* 버튼 여백 축소 */
-        font-size: 13px;               /* 메뉴 축소 */
+        padding: 8px 6px;
+        font-size: 13px;
       }
       .menu-row a::after{ left: 6px; right: 6px; bottom: 4px; }
     }
