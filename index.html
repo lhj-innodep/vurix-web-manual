@@ -206,6 +206,18 @@
           const headingEls = doc.querySelectorAll('._1-1-Heading');
           headingEls.forEach(el => { el.style.marginTop = '0'; });
 
+          // PC 화면(폭 > 900px)에서만 콘텐츠 1.5배 확대
+          if (window.innerWidth > 900) {
+            const htmlEl = doc.documentElement;
+            const bodyEl = doc.body;
+            htmlEl.style.transform = 'scale(1.5)';
+            htmlEl.style.transformOrigin = 'top center';
+            const logicalWidth = (100 / 1.5) + '%';
+            htmlEl.style.width = logicalWidth;
+            bodyEl.style.width = logicalWidth;
+            htmlEl.style.margin = '0 auto';
+          }
+
           // 높이 계산
           const body = doc.body, html = doc.documentElement;
           const h = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
