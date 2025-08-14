@@ -1,121 +1,233 @@
-<script>
-(function () {
-  const viewer = document.getElementById('viewer');
-  const links  = Array.from(document.querySelectorAll('.menu-row a'));
-  const routeMap = {
-    '#start':  'start.html',
-    '#live':   'live.html',
-    '#record': 'record.html',
-    '#event':  'event.html',
-    '#setup':  'setup.html',
-    '#other':  'other.html',
-    '#info':   'info.html'
-  };
-
-  // 후보 경로 자동 탐지 (루트/ko/docs 어디에 두든 작동)
-  const candidates = ['pages/', 'ko/pages/', '../ko/pages/', '../../ko/pages/', 'docs/ko/pages/'];
-  let pagesBase = null;
-
-  async function resolveBase(file) {
-    for (const base of candidates) {
-      try {
-        const url = new URL(base + file, location.href);
-        const res = await fetch(url.toString(), { method: 'HEAD', cache: 'no-store' });
-        if (res.ok) return base;
-      } catch (e) {}
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>VURIX Mobile</title>
+  <style>
+    :root{
+      --container-width: 900px;
+      --container-pad: 16px;
+      --header-row-height: 56px;   /* 상단 1줄 */
+      --header-height: var(--header-row-height);
+      --footer-height: 56px;
+      --bg-topbar: #f6f6f6;        /* 좌우 전체 동일 색 */
+      --bg-content: #ffffff;
+      --text: #24292e;
+      --muted: #6a737d;
     }
-    return 'ko/pages/'; // 폴백
-  }
+    @media (max-width: 900px){ :root{ --container-width: 700px; } }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; color: var(--text); background: var(--bg-content); line-height: 1.5; }
 
-  function setActive(hash) {
-    links.forEach(a => a.removeAttribute('aria-current'));
-    const t = links.find(a => a.getAttribute('href') === hash);
-    if (t) t.setAttribute('aria-current', 'page');
-  }
+    /* 폭 제한은 내부 컨테이너만 */
+    .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin: 0 auto; }
 
-  async function loadFromHash() {
-    const hash = location.hash || '#start';
-    const file = routeMap[hash] || 'start.html';
-    if (!pagesBase) pagesBase = await resolveBase(file);
-    viewer.src = pagesBase + file;
-    setActive(routeMap[hash] ? hash : '#start');
-  }
-
-  // --- 아이콘 경로 보정 ---
-  function projectBasePath() {
-    // GitHub Pages: /<username>.github.io/<repo>/... 형태
-    // location.pathname에서 repo 이름까지를 잘라냅니다.
-    const parts = location.pathname.split('/').filter(Boolean);
-    // 예) ['', 'vurix-web-manual', '...'] → '/vurix-web-manual/'
-    const repoIndex = parts.indexOf('vurix-web-manual');
-    if (repoIndex >= 0) return '/' + parts[repoIndex] + '/';
-    // 로컬 파일이나 다른 호스팅일 때는 현재 경로 기준
-    return '/';
-  }
-
-  function fixIconPaths(doc) {
-    const base = projectBasePath();
-    const iconAbs = base + 'ko/assets/icon/'; // 아이콘의 "정답 경로"
-    const imgs = Array.from(doc.querySelectorAll('img[src*=\"0_ICON\" i], img[src*=\"icon\" i]'));
-    for (const img of imgs) {
-      try {
-        const name = img.getAttribute('src').split(/[\\/]/).pop(); // 파일명만 추출
-        if (!name) continue;
-        img.setAttribute('src', iconAbs + name);
-      } catch (e) {}
+    /* 상단바: 화면 전체 배경 + 내부 2열(좌 타이틀 / 우 메뉴) */
+    header.header {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--header-row-height);
+      background: var(--bg-topbar);
+      z-index: 1000;
     }
-  }
+    .header-inner{
+      height: 100%;
+      padding: 0 var(--container-pad);
+      display: grid;
+      grid-template-columns: auto 1fr; /* 좌: 타이틀, 우: 메뉴 */
+      align-items: center;
+      gap: 16px;
+    }
+    .title-row{
+      font-size: 20px;  /* 보기 좋게 축소 */
+      font-weight: 800; letter-spacing: .2px;
+      white-space: nowrap;
+    }
+    .menu-row{
+      display: flex; justify-content: center; align-items: center; /* 메뉴 가운데 */
+      gap: 8px; flex-wrap: wrap;
+    }
+    .menu-row a{
+      text-decoration: none;
+      padding: 6px 10px;          /* 버튼 크기도 축소 */
+      border-radius: 8px;
+      font-weight: 600; font-size: 15px; /* 글씨 축소 */
+      color: var(--text); white-space: nowrap;
+    }
+    .menu-row a:hover{ background: #00000008; }
+    .menu-row a[aria-current="page"]{ outline: 2px solid #00000014; outline-offset: 2px; }
 
-  // iframe 내부 스크롤 제거 + 높이 자동 조절
-  function resizeToContent() {
-    try {
-      const doc = viewer.contentDocument || viewer.contentWindow.document;
-      if (!doc) return;
+    /* 본문 여백: 상·하단 고정 높이만큼 */
+    .wrap{ padding: calc(var(--header-height) + 16px) var(--container-pad) calc(var(--footer-height) + 16px); }
 
-      // 내부 스크롤 원천 차단
-      const style = doc.createElement('style');
-      style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
-      doc.head && doc.head.appendChild(style);
+    /* 콘텐츠 iframe: 외곽선 제거, 내부 스크롤바 제거(부모 창 스크롤 사용) */
+    .viewer{
+      width: 100%;
+      border: none; border-radius: 0;
+      display: block;
+      min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px); /* 실패시 대비 */
+      overflow: hidden;
+    }
 
-      // 아이콘 경로 보정 실행
-      fixIconPaths(doc);
+    /* 하단 */
+    .footer{
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: var(--footer-height);
+      background: var(--bg-content);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 12px;
+      padding: 0 var(--container-pad);
+    }
+  </style>
+</head>
+<body>
+  <header class="header" role="banner">
+    <div class="header-inner">
+      <div class="title-row">VURIX Mobile</div>
+      <nav class="menu-row" aria-label="주 메뉴">
+        <a href="#start"  data-file="start.html">시작</a>
+        <a href="#live"   data-file="live.html">실시간 영상</a>
+        <a href="#record" data-file="record.html">녹화 영상</a>
+        <a href="#event"  data-file="event.html">이벤트</a>
+        <a href="#setup"  data-file="setup.html">설정</a>
+        <a href="#other"  data-file="other.html">기타</a>
+        <a href="#info"   data-file="info.html">참고</a>
+      </nav>
+    </div>
+  </header>
 
-      // 높이 계산
-      const body = doc.body, html = doc.documentElement;
-      const h = Math.max(
-        body.scrollHeight, body.offsetHeight,
-        html.clientHeight, html.scrollHeight, html.offsetHeight
-      );
-      viewer.style.height = h + 'px';
-    } catch (e) {}
-  }
+  <main class="wrap" role="main">
+    <iframe
+      id="viewer" class="viewer" title="콘텐츠 뷰어"
+      src="" loading="lazy" referrerpolicy="no-referrer" scrolling="no"
+    ></iframe>
+    <noscript>이 사이트는 JavaScript가 필요합니다. 브라우저 설정에서 활성화해주세요.</noscript>
+  </main>
 
-  // 메뉴 네비게이션
-  links.forEach(a => {
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      const hash = a.getAttribute('href');
-      if (location.hash !== hash) history.pushState(null, '', hash);
-      loadFromHash();
-    });
-  });
-  window.addEventListener('popstate', loadFromHash);
-  window.addEventListener('hashchange', loadFromHash);
+  <footer class="footer" role="contentinfo">
+    ©2025 Innodep, Inc.
+  </footer>
 
-  // 컨텐츠 로드/변경 감지 → 리사이즈 & 아이콘 재보정
-  viewer.addEventListener('load', () => {
-    resizeToContent();
-    try {
-      const doc = viewer.contentDocument;
-      const observer = new MutationObserver(() => resizeToContent());
-      observer.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
-      Array.from(doc.images || []).forEach(img => {
-        if (!img.complete) img.addEventListener('load', resizeToContent);
+  <script>
+  (function () {
+    // DOM 준비 후 초기화
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else { init(); }
+
+    function init() {
+      const viewer = document.getElementById('viewer');
+      if (!viewer) return;
+
+      const links  = Array.from(document.querySelectorAll('.menu-row a'));
+      const routeMap = {
+        '#start':  'start.html',
+        '#live':   'live.html',
+        '#record': 'record.html',
+        '#event':  'event.html',
+        '#setup':  'setup.html',
+        '#other':  'other.html',
+        '#info':   'info.html'
+      };
+
+      // 후보 경로 자동 탐지 (루트/ko/docs 어디서든)
+      const candidates = ['pages/', 'ko/pages/', '../ko/pages/', '../../ko/pages/', 'docs/ko/pages/'];
+      let pagesBase = null;
+
+      async function resolveBase(file) {
+        for (const base of candidates) {
+          try {
+            const url = new URL(base + file, location.href);
+            const res = await fetch(url.toString(), { method: 'HEAD', cache: 'no-store' });
+            if (res.ok) return base;
+          } catch (_) {}
+        }
+        return 'ko/pages/'; // 폴백
+      }
+
+      function setActive(hash) {
+        links.forEach(a => a.removeAttribute('aria-current'));
+        const t = links.find(a => a.getAttribute('href') === hash);
+        if (t) t.setAttribute('aria-current', 'page');
+      }
+
+      async function loadFromHash() {
+        const hash = location.hash || '#start';
+        const file = routeMap[hash] || 'start.html';
+        if (!pagesBase) pagesBase = await resolveBase(file);
+        viewer.src = pagesBase + file;
+        setActive(routeMap[hash] ? hash : '#start');
+      }
+
+      // 프로젝트 절대경로(/vurix-web-manual/) 계산
+      function projectBasePath() {
+        const parts = location.pathname.split('/').filter(Boolean);
+        const repoIndex = parts.indexOf('vurix-web-manual');
+        return repoIndex >= 0 ? '/' + parts[repoIndex] + '/' : '/';
+      }
+
+      // 아이콘 경로 보정: 0_ICON / icon이 포함된 이미지의 src를 절대경로로 바꿈
+      function fixIconPaths(doc) {
+        const base = projectBasePath();
+        const iconAbs = base + 'ko/assets/icon/'; // 아이콘의 정답 경로
+        const imgs = Array.from(doc.querySelectorAll('img[src*="0_ICON" i], img[src*="icon" i]'));
+        for (const img of imgs) {
+          const src = img.getAttribute('src') || '';
+          const name = src.split(/[\\/]/).pop();
+          if (name) img.setAttribute('src', iconAbs + name);
+        }
+      }
+
+      // iframe 내부 스크롤 제거 + 높이 자동 조절
+      function resizeToContent() {
+        try {
+          const doc = viewer.contentDocument || viewer.contentWindow.document;
+          if (!doc) return;
+
+          // 내부 스크롤 원천 차단
+          const style = doc.createElement('style');
+          style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
+          doc.head && doc.head.appendChild(style);
+
+          // 아이콘 경로 보정
+          fixIconPaths(doc);
+
+          // 높이 계산
+          const body = doc.body, html = doc.documentElement;
+          const h = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+          viewer.style.height = h + 'px';
+        } catch (_) {}
+      }
+
+      // 메뉴 네비게이션
+      links.forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const hash = a.getAttribute('href');
+          if (location.hash !== hash) history.pushState(null, '', hash);
+          loadFromHash();
+        });
       });
-    } catch (e) {}
-  });
+      window.addEventListener('popstate', loadFromHash);
+      window.addEventListener('hashchange', loadFromHash);
 
-  // 최초 로드
-  loadFromHash();
-})();
-</script>
+      // 컨텐츠 로드/변경 감지 → 리사이즈 & 아이콘 재보정
+      viewer.addEventListener('load', () => {
+        resizeToContent();
+        try {
+          const doc = viewer.contentDocument;
+          const observer = new MutationObserver(() => resizeToContent());
+          observer.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
+          Array.from(doc.images || []).forEach(img => {
+            if (!img.complete) img.addEventListener('load', resizeToContent);
+          });
+        } catch (_) {}
+      });
+
+      // 최초 로드
+      loadFromHash();
+    }
+  })();
+  </script>
+</body>
+</html>
