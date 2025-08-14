@@ -8,10 +8,10 @@
     :root{
       --container-width: 900px;
       --container-pad: 16px;
-      --header-row-height: 56px;   /* 상단 1줄 */
+      --header-row-height: 56px;
       --header-height: var(--header-row-height);
       --footer-height: 56px;
-      --bg-topbar: #f6f6f6;        /* 좌우 전체 동일 색 */
+      --bg-topbar: #f6f6f6;
       --bg-content: #ffffff;
       --text: #24292e;
       --muted: #6a737d;
@@ -20,10 +20,8 @@
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; color: var(--text); background: var(--bg-content); line-height: 1.5; }
 
-    /* 폭 제한은 내부 컨테이너만 */
-    .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin: 0 auto; }
+    .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin-left: auto; margin-right: auto; }
 
-    /* 상단바: 화면 전체 배경 + 내부 2열(좌 타이틀 / 우 메뉴) */
     header.header {
       position: fixed; top: 0; left: 0; right: 0;
       height: var(--header-row-height);
@@ -34,42 +32,40 @@
       height: 100%;
       padding: 0 var(--container-pad);
       display: grid;
-      grid-template-columns: auto 1fr; /* 좌: 타이틀, 우: 메뉴 */
+      grid-template-columns: auto 1fr;
       align-items: center;
       gap: 16px;
     }
     .title-row{
-      font-size: 20px;  /* 보기 좋게 축소 */
+      font-size: 20px;
       font-weight: 800; letter-spacing: .2px;
       white-space: nowrap;
     }
     .menu-row{
-      display: flex; justify-content: center; align-items: center; /* 메뉴 가운데 */
+      display: flex; justify-content: center; align-items: center;
       gap: 8px; flex-wrap: wrap;
     }
     .menu-row a{
       text-decoration: none;
-      padding: 6px 10px;          /* 버튼 크기도 축소 */
+      padding: 6px 10px;
       border-radius: 8px;
-      font-weight: 600; font-size: 15px; /* 글씨 축소 */
-      color: var(--text); white-space: nowrap;
+      font-weight: 600; font-size: 15px;
+      color: var(--text);
+      white-space: nowrap;
     }
     .menu-row a:hover{ background: #00000008; }
     .menu-row a[aria-current="page"]{ outline: 2px solid #00000014; outline-offset: 2px; }
 
-    /* 본문 여백: 상·하단 고정 높이만큼 */
     .wrap{ padding: calc(var(--header-height) + 16px) var(--container-pad) calc(var(--footer-height) + 16px); }
 
-    /* 콘텐츠 iframe: 외곽선 제거, 내부 스크롤바 제거(부모 창 스크롤 사용) */
     .viewer{
       width: 100%;
       border: none; border-radius: 0;
       display: block;
-      min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px); /* 실패시 대비 */
+      min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px);
       overflow: hidden;
     }
 
-    /* 하단 */
     .footer{
       position: fixed; bottom: 0; left: 0; right: 0;
       height: var(--footer-height);
@@ -97,10 +93,7 @@
   </header>
 
   <main class="wrap" role="main">
-    <iframe
-      id="viewer" class="viewer" title="콘텐츠 뷰어"
-      src="" loading="lazy" referrerpolicy="no-referrer" scrolling="no"
-    ></iframe>
+    <iframe id="viewer" class="viewer" title="콘텐츠 뷰어" src="" loading="lazy" referrerpolicy="no-referrer" scrolling="no"></iframe>
     <noscript>이 사이트는 JavaScript가 필요합니다. 브라우저 설정에서 활성화해주세요.</noscript>
   </main>
 
@@ -109,100 +102,89 @@
   </footer>
 
   <script>
-    (function () {
-      const viewer = document.getElementById('viewer');
-      const links  = Array.from(document.querySelectorAll('.menu-row a'));
-      const routeMap = {
-        '#start':  'start.html',
-        '#live':   'live.html',
-        '#record': 'record.html',
-        '#event':  'event.html',
-        '#setup':  'setup.html',
-        '#other':  'other.html',
-        '#info':   'info.html'
-      };
+  (function () {
+    const viewer = document.getElementById('viewer');
+    const links  = Array.from(document.querySelectorAll('.menu-row a'));
+    const routeMap = {
+      '#start':  'start.html',
+      '#live':   'live.html',
+      '#record': 'record.html',
+      '#event':  'event.html',
+      '#setup':  'setup.html',
+      '#other':  'other.html',
+      '#info':   'info.html'
+    };
 
-      // 후보 경로들 (현재 index.html 위치에 따라 자동 탐지)
-      const candidateBases = [
-        new URL('pages/', location.href).pathname,
-        new URL('ko/pages/', location.href).pathname,
-        new URL('../ko/pages/', location.href).pathname,
-        new URL('../../ko/pages/', location.href).pathname
-      ];
-      let pagesBase = null;
+    // 후보 경로를 순서대로 점검해 존재하는 base를 선택
+    const candidates = ['pages/', 'ko/pages/', '../ko/pages/', '../../ko/pages/', 'docs/ko/pages/', './docs/ko/pages/'];
+    let pagesBase = null;
 
-      async function resolveBase(file) {
-        for (const base of candidateBases) {
-          try {
-            const url = base + file;
-            const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-            if (res.ok) return base;
-          } catch (e) { /* ignore and try next */ }
-        }
-        return candidateBases[0]; // 마지막 폴백
-      }
-
-      function setActive(hash) {
-        links.forEach(a => a.removeAttribute('aria-current'));
-        const target = links.find(a => a.getAttribute('href') === hash);
-        if (target) target.setAttribute('aria-current', 'page');
-      }
-
-      async function loadFromHash() {
-        const hash = location.hash || '#start';
-        const file = routeMap[hash] || 'start.html';
-        if (!pagesBase) pagesBase = await resolveBase(file);
-        viewer.src = pagesBase + file;
-        setActive(routeMap[hash] ? hash : '#start');
-      }
-
-      // iframe 내부 스크롤 제거 + 높이 자동 조절
-      function resizeToContent() {
+    async function resolveBase(file) {
+      for (const base of candidates) {
         try {
-          const doc = viewer.contentDocument || viewer.contentWindow.document;
-          if (!doc) return;
-          // 내부 스크롤 원천 차단
-          const style = doc.createElement('style');
-          style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
-          doc.head && doc.head.appendChild(style);
-
-          const body = doc.body, html = doc.documentElement;
-          const h = Math.max(
-            body.scrollHeight, body.offsetHeight,
-            html.clientHeight, html.scrollHeight, html.offsetHeight
-          );
-          viewer.style.height = h + 'px';
-        } catch (e) { /* cross-origin이면 접근 불가 -> GH Pages 동일 저장소는 OK */ }
-      }
-
-      // 메뉴 네비게이션
-      links.forEach(a => {
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          const hash = a.getAttribute('href');
-          if (location.hash !== hash) history.pushState(null, '', hash);
-          loadFromHash();
-        });
-      });
-      window.addEventListener('popstate', loadFromHash);
-      window.addEventListener('hashchange', loadFromHash);
-
-      // 컨텐츠 로드/변경 감지 → 리사이즈
-      viewer.addEventListener('load', () => {
-        resizeToContent();
-        try {
-          const doc = viewer.contentDocument;
-          const observer = new MutationObserver(() => resizeToContent());
-          observer.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
-          Array.from(doc.images || []).forEach(img => {
-            if (!img.complete) img.addEventListener('load', resizeToContent);
-          });
+          const url = new URL(base + file, location.href);
+          const res = await fetch(url.toString(), { method: 'HEAD', cache: 'no-store' });
+          if (res.ok) return base;
         } catch (e) {}
-      });
+      }
+      return 'ko/pages/'; // 폴백
+    }
 
-      // 최초 로드
-      loadFromHash();
-    })();
+    function setActive(hash) {
+      links.forEach(a => a.removeAttribute('aria-current'));
+      const target = links.find(a => a.getAttribute('href') === hash);
+      if (target) target.setAttribute('aria-current', 'page');
+    }
+
+    async function loadFromHash() {
+      const hash = location.hash || '#start';
+      const file = routeMap[hash] || 'start.html';
+      if (!pagesBase) pagesBase = await resolveBase(file);
+      viewer.src = pagesBase + file;
+      setActive(routeMap[hash] ? hash : '#start');
+    }
+
+    // iframe 내부 스크롤 제거 + 높이 자동 조절
+    function resizeToContent() {
+      try {
+        const doc = viewer.contentDocument || viewer.contentWindow.document;
+        if (!doc) return;
+        const style = doc.createElement('style');
+        style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
+        doc.head && doc.head.appendChild(style);
+        const body = doc.body, html = doc.documentElement;
+        const h = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+        viewer.style.height = h + 'px';
+      } catch (e) {}
+    }
+
+    // 메뉴 네비게이션
+    links.forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const hash = a.getAttribute('href');
+        if (location.hash !== hash) history.pushState(null, '', hash);
+        loadFromHash();
+      });
+    });
+    window.addEventListener('popstate', loadFromHash);
+    window.addEventListener('hashchange', loadFromHash);
+
+    viewer.addEventListener('load', () => {
+      resizeToContent();
+      try {
+        const doc = viewer.contentDocument;
+        const observer = new MutationObserver(() => resizeToContent());
+        observer.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
+        Array.from(doc.images || []).forEach(img => {
+          if (!img.complete) img.addEventListener('load', resizeToContent);
+        });
+      } catch (e) {}
+    });
+
+    // 최초 로드
+    loadFromHash();
+  })();
   </script>
 </body>
 </html>
