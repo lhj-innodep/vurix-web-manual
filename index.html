@@ -11,109 +11,67 @@
       --header-row-height: 56px;
       --header-height: var(--header-row-height);
       --footer-height: 56px;
-      --bg-topbar: #f6f6f6;     /* 깃허브 톤 */
+      --bg-topbar: #f6f6f6;
       --bg-content: #ffffff;
       --text: #24292e;
       --muted: #6a737d;
-      --accent: #3366ff;        /* 요청 컬러 */
-      --line: #d0d7de;
     }
     @media (max-width: 900px){
       :root{ --container-width: 700px; }
     }
-
     * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif; color: var(--text); background: var(--bg-content); line-height: 1.5; }
+    html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; color: var(--text); background: var(--bg-content); line-height: 1.5; }
 
-    /* 폭 제한은 내부 컨테이너만 적용 */
-    .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin: 0 auto; }
+    .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin-left: auto; margin-right: auto; }
 
-    /* 상단바(전체폭 배경) */
-    header.header{
+    header.header {
       position: fixed; top: 0; left: 0; right: 0;
       height: var(--header-row-height);
       background: var(--bg-topbar);
       z-index: 1000;
-      border-bottom: 1px solid var(--line);
     }
     .header-inner{
       height: 100%;
       padding: 0 var(--container-pad);
       display: grid;
-      grid-template-columns: auto 1fr;  /* 좌: 타이틀 / 우: 메뉴 */
+      grid-template-columns: auto 1fr;
       align-items: center;
       gap: 16px;
     }
-
-    /* 타이틀: 작고 또렷하게 */
     .title-row{
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: .2px;
+      font-size: 20px;
+      font-weight: 800; letter-spacing: .2px;
       white-space: nowrap;
     }
-
-    /* 메뉴: 중앙 정렬, 깃허브 탭 느낌 */
     .menu-row{
       display: flex; justify-content: center; align-items: center;
-      gap: 12px; flex-wrap: wrap;
+      gap: 8px; flex-wrap: wrap;
     }
     .menu-row a{
-      position: relative;
       text-decoration: none;
-      padding: 10px 8px;          /* 세로 여백↑ 라인과 겹치지 않게 */
-      font-size: 14px;            /* ↓ 줄임 */
+      padding: 6px 10px;
+      border-radius: 8px;
       font-weight: 600;
+      font-size: 15px;
       color: var(--text);
       white-space: nowrap;
-      transition: color .15s ease;
     }
-    /* 호버 시 밑줄 애니메이션 */
-    .menu-row a::after{
-      content: "";
-      position: absolute; left: 8px; right: 8px; bottom: 6px;
-      height: 2px; background: var(--accent);
-      transform: scaleX(0);
-      transform-origin: center;
-      transition: transform .15s ease;
-    }
-    .menu-row a:hover{
-      color: var(--accent);
-    }
-    .menu-row a:hover::after{
-      transform: scaleX(1);
-    }
-    /* 현재 탭(활성) */
-    .menu-row a[aria-current="page"]{
-      color: var(--accent);
-    }
-    .menu-row a[aria-current="page"]::after{
-      transform: scaleX(1);
-      height: 3px;                /* 활성은 더 두껍게 */
-    }
-    /* 키보드 포커스 접근성 */
-    .menu-row a:focus-visible{
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-      border-radius: 6px;
-    }
+    .menu-row a:hover{ background: #00000008; }
+    .menu-row a[aria-current="page"]{ outline: 2px solid #00000014; outline-offset: 2px; }
 
-    /* 본문 여백: 상/하단 고정 높이만큼 */
     .wrap{
       padding: calc(var(--header-height) + 16px) var(--container-pad) calc(var(--footer-height) + 16px);
     }
 
-    /* 콘텐츠 iframe: 외곽선 제거, 내부 스크롤바 제거(부모 창 스크롤 사용) */
     .viewer{
       width: 100%;
-      border: none; border-radius: 0;
+      border: none;
+      border-radius: 0;
       display: block;
-      min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px); /* 실패시 대비 */
+      min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px);
       overflow: hidden;
-      background: transparent;
     }
 
-    /* 하단 */
     .footer{
       position: fixed; bottom: 0; left: 0; right: 0;
       height: var(--footer-height);
@@ -121,7 +79,6 @@
       display: flex; align-items: center; justify-content: center;
       color: var(--muted); font-size: 12px;
       padding: 0 var(--container-pad);
-      border-top: 1px solid var(--line);
     }
   </style>
 </head>
@@ -143,8 +100,13 @@
 
   <main class="wrap" role="main">
     <iframe
-      id="viewer" class="viewer" title="콘텐츠 뷰어"
-      src="" loading="lazy" referrerpolicy="no-referrer" scrolling="no"
+      id="viewer"
+      class="viewer"
+      title="콘텐츠 뷰어"
+      src="pages/start.html"
+      loading="lazy"
+      referrerpolicy="no-referrer"
+      scrolling="no"
     ></iframe>
     <noscript>이 사이트는 JavaScript가 필요합니다. 브라우저 설정에서 활성화해주세요.</noscript>
   </main>
@@ -154,16 +116,8 @@
   </footer>
 
   <script>
-  (function () {
-    // DOM 준비 후 초기화
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else { init(); }
-
-    function init() {
+    (function () {
       const viewer = document.getElementById('viewer');
-      if (!viewer) return;
-
       const links  = Array.from(document.querySelectorAll('.menu-row a'));
       const routeMap = {
         '#start':  'start.html',
@@ -175,71 +129,38 @@
         '#info':   'info.html'
       };
 
-      /* -------- 경로 자동 탐지 -------- */
-      const candidates = ['pages/', 'ko/pages/', '../ko/pages/', '../../ko/pages/', 'docs/ko/pages/'];
-      let pagesBase = null;
-
-      async function resolveBase(file) {
-        for (const base of candidates) {
-          try {
-            const url = new URL(base + file, location.href);
-            const res = await fetch(url.toString(), { method: 'HEAD', cache: 'no-store' });
-            if (res.ok) return base;
-          } catch (_) {}
-        }
-        return 'ko/pages/'; // 폴백
-      }
-
       function setActive(hash) {
         links.forEach(a => a.removeAttribute('aria-current'));
-        const t = links.find(a => a.getAttribute('href') === hash);
-        if (t) t.setAttribute('aria-current', 'page');
+        const target = links.find(a => a.getAttribute('href') === hash);
+        if (target) target.setAttribute('aria-current', 'page');
       }
 
-      async function loadFromHash() {
+      function loadFromHash() {
         const hash = location.hash || '#start';
         const file = routeMap[hash] || 'start.html';
-        if (!pagesBase) pagesBase = await resolveBase(file);
-        viewer.src = pagesBase + file;
+        viewer.src = 'pages/' + file;
         setActive(routeMap[hash] ? hash : '#start');
       }
 
-      /* -------- 아이콘 경로 보정 -------- */
-      function projectBasePath() {
-        const parts = location.pathname.split('/').filter(Boolean);
-        const repoIndex = parts.indexOf('vurix-web-manual');
-        return repoIndex >= 0 ? '/' + parts[repoIndex] + '/' : '/';
-      }
-      function fixIconPaths(doc) {
-        const base = projectBasePath();
-        const iconAbs = base + 'ko/assets/icon/'; // 정답 경로
-        const imgs = Array.from(doc.querySelectorAll('img[src*="0_ICON" i], img[src*="icon" i]'));
-        for (const img of imgs) {
-          const src = img.getAttribute('src') || '';
-          const name = src.split(/[\\/]/).pop();
-          if (name) img.setAttribute('src', iconAbs + name);
-        }
-      }
-
-      /* -------- iframe 높이/스크롤 제어 -------- */
       function resizeToContent() {
         try {
           const doc = viewer.contentDocument || viewer.contentWindow.document;
           if (!doc) return;
-          // 내부 스크롤 원천 차단
           const style = doc.createElement('style');
           style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
           doc.head && doc.head.appendChild(style);
-          // 아이콘 경로 보정
-          fixIconPaths(doc);
-          // 높이 계산
+          // _1-1-Heading 위여백 제거
+          const headingEls = doc.querySelectorAll('._1-1-Heading');
+          headingEls.forEach(el => el.style.marginTop = '0');
           const body = doc.body, html = doc.documentElement;
-          const h = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+          const h = Math.max(
+            body.scrollHeight, body.offsetHeight,
+            html.clientHeight, html.scrollHeight, html.offsetHeight
+          );
           viewer.style.height = h + 'px';
-        } catch (_) {}
+        } catch (e) {}
       }
 
-      /* -------- 이벤트 바인딩 -------- */
       links.forEach(a => {
         a.addEventListener('click', (e) => {
           e.preventDefault();
@@ -260,13 +181,11 @@
           Array.from(doc.images || []).forEach(img => {
             if (!img.complete) img.addEventListener('load', resizeToContent);
           });
-        } catch (_) {}
+        } catch (e) {}
       });
 
-      // 최초 로드
       loadFromHash();
-    }
-  })();
+    })();
   </script>
 </body>
 </html>
