@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>VURIX Mobile</title>
+  <style>
+    :root{
+      --container-width: 900px;
+      --container-pad: 16px;
+      --header-row-height: 56px;
+      --header-height: var(--header-row-height);
+      --footer-height: 56px;
+      --bg-topbar: #f6f6f6;
+      --bg-content: #ffffff;
+      --text: #24292e;
+      --muted: #6a737d;
+    }
+    @media (max-width: 900px){
+      :root{ --container-width: 700px; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; color: var(--text); background: var(--bg-content); line-height: 1.5; }
+
+    .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin-left: auto; margin-right: auto; }
+
+    header.header {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--header-row-height);
+      background: var(--bg-topbar);
+      z-index: 1000;
+    }
+    .header-inner{
+      height: 100%;
+      padding: 0 var(--container-pad);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 16px;
+    }
+    .title-row{
+      font-size: 20px;
+      font-weight: 800; letter-spacing: .2px;
+      white-space: nowrap;
+    }
+    .menu-row{
+      display: flex; justify-content: center; align-items: center;
+      gap: 8px; flex-wrap: wrap;
+    }
+    .menu-row a{
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .menu-row a:hover{ background: #00000008; }
+    .menu-row a[aria-current="page"]{ outline: 2px solid #00000014; outline-offset: 2px; }
+
+    .wrap{
+      padding: calc(var(--header-height) + 16px) var(--container-pad) calc(var(--footer-height) + 16px);
+    }
+
+    .viewer{
+      width: 100%;
+      border: none;
+      border-radius: 0;
+      display: block;
+      min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px);
+      overflow: hidden;
+    }
+
+    .footer{
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: var(--footer-height);
+      background: var(--bg-content);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 12px;
+      padding: 0 var(--container-pad);
+    }
+  </style>
+</head>
+<body>
+  <header class="header" role="banner">
+    <div class="header-inner">
+      <div class="title-row">VURIX Mobile</div>
+      <nav class="menu-row" aria-label="주 메뉴">
+        <a href="#start"  data-file="start.html">시작</a>
+        <a href="#live"   data-file="live.html">실시간 영상</a>
+        <a href="#record" data-file="record.html">녹화 영상</a>
+        <a href="#event"  data-file="event.html">이벤트</a>
+        <a href="#setup"  data-file="setup.html">설정</a>
+        <a href="#other"  data-file="other.html">기타</a>
+        <a href="#info"   data-file="info.html">참고</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" role="main">
+    <iframe
+      id="viewer"
+      class="viewer"
+      title="콘텐츠 뷰어"
+      src="pages/start.html"
+      loading="lazy"
+      referrerpolicy="no-referrer"
+      scrolling="no"
+    ></iframe>
+    <noscript>이 사이트는 JavaScript가 필요합니다. 브라우저 설정에서 활성화해주세요.</noscript>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    ©2025 Innodep, Inc.
+  </footer>
+
+  <script>
+    (function () {
+      const viewer = document.getElementById('viewer');
+      const links  = Array.from(document.querySelectorAll('.menu-row a'));
+      const routeMap = {
+        '#start':  'start.html',
+        '#live':   'live.html',
+        '#record': 'record.html',
+        '#event':  'event.html',
+        '#setup':  'setup.html',
+        '#other':  'other.html',
+        '#info':   'info.html'
+      };
+
+      function setActive(hash) {
+        links.forEach(a => a.removeAttribute('aria-current'));
+        const target = links.find(a => a.getAttribute('href') === hash);
+        if (target) target.setAttribute('aria-current', 'page');
+      }
+
+      function loadFromHash() {
+        const hash = location.hash || '#start';
+        const file = routeMap[hash] || 'start.html';
+        viewer.src = 'pages/' + file;
+        setActive(routeMap[hash] ? hash : '#start');
+      }
+
+      function resizeToContent() {
+        try {
+          const doc = viewer.contentDocument || viewer.contentWindow.document;
+          if (!doc) return;
+          const style = doc.createElement('style');
+          style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
+          doc.head && doc.head.appendChild(style);
+          const body = doc.body, html = doc.documentElement;
+          const h = Math.max(
+            body.scrollHeight, body.offsetHeight,
+            html.clientHeight, html.scrollHeight, html.offsetHeight
+          );
+          viewer.style.height = h + 'px';
+        } catch (e) {}
+      }
+
+      links.forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const hash = a.getAttribute('href');
+          if (location.hash !== hash) history.pushState(null, '', hash);
+          loadFromHash();
+        });
+      });
+      window.addEventListener('popstate', loadFromHash);
+      window.addEventListener('hashchange', loadFromHash);
+
+      viewer.addEventListener('load', () => {
+        resizeToContent();
+        try {
+          const doc = viewer.contentDocument;
+          const observer = new MutationObserver(() => resizeToContent());
+          observer.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
+          Array.from(doc.images || []).forEach(img => {
+            if (!img.complete) img.addEventListener('load', resizeToContent);
+          });
+        } catch (e) {}
+      });
+
+      loadFromHash();
+    })();
+  </script>
+</body>
+</html>
