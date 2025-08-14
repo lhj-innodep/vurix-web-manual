@@ -1,6 +1,0 @@
-/* Shared idGeneratedStyles.css
-   - 이 파일은 각 문서별 idGeneratedStyles.css를 대체하기 위한 공용본입니다.
-   - 실제 InDesign 출력 CSS가 있다면, 그 내용을 아래에 붙여넣어 교체하세요.
-   - content.css가 본문 기본 스타일을 담당하므로, 공용본은 비워도 기본 가독성은 유지됩니다.
-*/
-html,body{background:#fff}
