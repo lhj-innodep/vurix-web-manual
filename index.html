@@ -8,10 +8,10 @@
     :root{
       --container-width: 900px;
       --container-pad: 16px;
-      --header-row-height: 56px;
+      --header-row-height: 56px;   /* 상단 1줄 */
       --header-height: var(--header-row-height);
       --footer-height: 56px;
-      --bg-topbar: #f6f6f6;
+      --bg-topbar: #f6f6f6;        /* 좌우 전체 동일 색 */
       --bg-content: #ffffff;
       --text: #24292e;
       --muted: #6a737d;
@@ -22,8 +22,10 @@
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; color: var(--text); background: var(--bg-content); line-height: 1.5; }
 
-    .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin-left: auto; margin-right: auto; }
+    /* 폭 제한은 내부 컨테이너만 */
+    .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin: 0 auto; }
 
+    /* 상단바: 화면 전체 배경 + 내부 2열(좌 타이틀 / 우 메뉴, 메뉴는 가운데 정렬) */
     header.header {
       position: fixed; top: 0; left: 0; right: 0;
       height: var(--header-row-height);
@@ -39,39 +41,40 @@
       gap: 16px;
     }
     .title-row{
-      font-size: 20px;
+      font-size: 20px;       /* 보기 좋게 축소 */
       font-weight: 800; letter-spacing: .2px;
       white-space: nowrap;
     }
     .menu-row{
-      display: flex; justify-content: center; align-items: center;
+      display: flex; justify-content: center; align-items: center; /* 메뉴 가운데 정렬 */
       gap: 8px; flex-wrap: wrap;
     }
     .menu-row a{
       text-decoration: none;
-      padding: 6px 10px;
+      padding: 6px 10px;     /* 버튼 크기도 살짝 축소 */
       border-radius: 8px;
       font-weight: 600;
-      font-size: 15px;
+      font-size: 15px;       /* 메뉴 글자 크기 축소 */
       color: var(--text);
       white-space: nowrap;
     }
     .menu-row a:hover{ background: #00000008; }
     .menu-row a[aria-current="page"]{ outline: 2px solid #00000014; outline-offset: 2px; }
 
-    .wrap{
-      padding: calc(var(--header-height) + 16px) var(--container-pad) calc(var(--footer-height) + 16px);
-    }
+    /* 본문 여백: 상·하단 고정 높이만큼 */
+    .wrap{ padding: calc(var(--header-height) + 16px) var(--container-pad) calc(var(--footer-height) + 16px); }
 
+    /* 콘텐츠 iframe: 외곽선 제거, 내부 스크롤바 제거(부모 창 스크롤 사용) */
     .viewer{
       width: 100%;
       border: none;
       border-radius: 0;
       display: block;
-      min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px);
+      min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px); /* 실패시 대비 */
       overflow: hidden;
     }
 
+    /* 하단 */
     .footer{
       position: fixed; bottom: 0; left: 0; right: 0;
       height: var(--footer-height);
@@ -103,7 +106,7 @@
       id="viewer"
       class="viewer"
       title="콘텐츠 뷰어"
-      src="pages/start.html"
+      src=""                     <!-- JS에서 올바른 경로로 설정 -->
       loading="lazy"
       referrerpolicy="no-referrer"
       scrolling="no"
@@ -129,6 +132,11 @@
         '#info':   'info.html'
       };
 
+      // ★ index.html의 실제 위치가 루트(/)인지 /ko/인지에 따라 pages 경로 자동 결정
+      //   - 루트에 있으면 'ko/pages/'
+      //   - /ko/ 폴더 안에 있으면 'pages/'
+      const pagesBase = location.pathname.includes('/ko/') ? 'pages/' : 'ko/pages/';
+
       function setActive(hash) {
         links.forEach(a => a.removeAttribute('aria-current'));
         const target = links.find(a => a.getAttribute('href') === hash);
@@ -138,26 +146,30 @@
       function loadFromHash() {
         const hash = location.hash || '#start';
         const file = routeMap[hash] || 'start.html';
-        viewer.src = 'pages/' + file;
+        viewer.src = pagesBase + file;
         setActive(routeMap[hash] ? hash : '#start');
       }
 
+      // iframe 내부 스크롤 제거 + 높이 자동 조절
       function resizeToContent() {
         try {
           const doc = viewer.contentDocument || viewer.contentWindow.document;
           if (!doc) return;
+          // 내부 스크롤 원천 차단
           const style = doc.createElement('style');
           style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
           doc.head && doc.head.appendChild(style);
+
           const body = doc.body, html = doc.documentElement;
           const h = Math.max(
             body.scrollHeight, body.offsetHeight,
             html.clientHeight, html.scrollHeight, html.offsetHeight
           );
           viewer.style.height = h + 'px';
-        } catch (e) {}
+        } catch (e) { /* cross-origin이면 접근 불가 → 이 저장소 구조에서는 해당 없음 */ }
       }
 
+      // 메뉴 네비게이션
       links.forEach(a => {
         a.addEventListener('click', (e) => {
           e.preventDefault();
@@ -169,6 +181,7 @@
       window.addEventListener('popstate', loadFromHash);
       window.addEventListener('hashchange', loadFromHash);
 
+      // 컨텐츠 로드/변경 감지 → 리사이즈
       viewer.addEventListener('load', () => {
         resizeToContent();
         try {
@@ -181,6 +194,7 @@
         } catch (e) {}
       });
 
+      // 최초 로드
       loadFromHash();
     })();
   </script>
