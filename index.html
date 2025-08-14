@@ -16,16 +16,14 @@
       --text: #24292e;
       --muted: #6a737d;
     }
-    @media (max-width: 900px){
-      :root{ --container-width: 700px; }
-    }
+    @media (max-width: 900px){ :root{ --container-width: 700px; } }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; color: var(--text); background: var(--bg-content); line-height: 1.5; }
 
     /* 폭 제한은 내부 컨테이너만 */
     .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin: 0 auto; }
 
-    /* 상단바: 화면 전체 배경 + 내부 2열(좌 타이틀 / 우 메뉴, 메뉴는 가운데 정렬) */
+    /* 상단바: 화면 전체 배경 + 내부 2열(좌 타이틀 / 우 메뉴) */
     header.header {
       position: fixed; top: 0; left: 0; right: 0;
       height: var(--header-row-height);
@@ -36,27 +34,25 @@
       height: 100%;
       padding: 0 var(--container-pad);
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: auto 1fr; /* 좌: 타이틀, 우: 메뉴 */
       align-items: center;
       gap: 16px;
     }
     .title-row{
-      font-size: 20px;       /* 보기 좋게 축소 */
+      font-size: 20px;  /* 보기 좋게 축소 */
       font-weight: 800; letter-spacing: .2px;
       white-space: nowrap;
     }
     .menu-row{
-      display: flex; justify-content: center; align-items: center; /* 메뉴 가운데 정렬 */
+      display: flex; justify-content: center; align-items: center; /* 메뉴 가운데 */
       gap: 8px; flex-wrap: wrap;
     }
     .menu-row a{
       text-decoration: none;
-      padding: 6px 10px;     /* 버튼 크기도 살짝 축소 */
+      padding: 6px 10px;          /* 버튼 크기도 축소 */
       border-radius: 8px;
-      font-weight: 600;
-      font-size: 15px;       /* 메뉴 글자 크기 축소 */
-      color: var(--text);
-      white-space: nowrap;
+      font-weight: 600; font-size: 15px; /* 글씨 축소 */
+      color: var(--text); white-space: nowrap;
     }
     .menu-row a:hover{ background: #00000008; }
     .menu-row a[aria-current="page"]{ outline: 2px solid #00000014; outline-offset: 2px; }
@@ -67,8 +63,7 @@
     /* 콘텐츠 iframe: 외곽선 제거, 내부 스크롤바 제거(부모 창 스크롤 사용) */
     .viewer{
       width: 100%;
-      border: none;
-      border-radius: 0;
+      border: none; border-radius: 0;
       display: block;
       min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px); /* 실패시 대비 */
       overflow: hidden;
@@ -103,13 +98,8 @@
 
   <main class="wrap" role="main">
     <iframe
-      id="viewer"
-      class="viewer"
-      title="콘텐츠 뷰어"
-      src=""                     <!-- JS에서 올바른 경로로 설정 -->
-      loading="lazy"
-      referrerpolicy="no-referrer"
-      scrolling="no"
+      id="viewer" class="viewer" title="콘텐츠 뷰어"
+      src="" loading="lazy" referrerpolicy="no-referrer" scrolling="no"
     ></iframe>
     <noscript>이 사이트는 JavaScript가 필요합니다. 브라우저 설정에서 활성화해주세요.</noscript>
   </main>
@@ -132,10 +122,25 @@
         '#info':   'info.html'
       };
 
-      // ★ index.html의 실제 위치가 루트(/)인지 /ko/인지에 따라 pages 경로 자동 결정
-      //   - 루트에 있으면 'ko/pages/'
-      //   - /ko/ 폴더 안에 있으면 'pages/'
-      const pagesBase = location.pathname.includes('/ko/') ? 'pages/' : 'ko/pages/';
+      // 후보 경로들 (현재 index.html 위치에 따라 자동 탐지)
+      const candidateBases = [
+        new URL('pages/', location.href).pathname,
+        new URL('ko/pages/', location.href).pathname,
+        new URL('../ko/pages/', location.href).pathname,
+        new URL('../../ko/pages/', location.href).pathname
+      ];
+      let pagesBase = null;
+
+      async function resolveBase(file) {
+        for (const base of candidateBases) {
+          try {
+            const url = base + file;
+            const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+            if (res.ok) return base;
+          } catch (e) { /* ignore and try next */ }
+        }
+        return candidateBases[0]; // 마지막 폴백
+      }
 
       function setActive(hash) {
         links.forEach(a => a.removeAttribute('aria-current'));
@@ -143,9 +148,10 @@
         if (target) target.setAttribute('aria-current', 'page');
       }
 
-      function loadFromHash() {
+      async function loadFromHash() {
         const hash = location.hash || '#start';
         const file = routeMap[hash] || 'start.html';
+        if (!pagesBase) pagesBase = await resolveBase(file);
         viewer.src = pagesBase + file;
         setActive(routeMap[hash] ? hash : '#start');
       }
@@ -166,7 +172,7 @@
             html.clientHeight, html.scrollHeight, html.offsetHeight
           );
           viewer.style.height = h + 'px';
-        } catch (e) { /* cross-origin이면 접근 불가 → 이 저장소 구조에서는 해당 없음 */ }
+        } catch (e) { /* cross-origin이면 접근 불가 -> GH Pages 동일 저장소는 OK */ }
       }
 
       // 메뉴 네비게이션
