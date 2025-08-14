@@ -192,58 +192,26 @@
       }
 
       /* -------- iframe 높이/스크롤 + 여백 제거 -------- */
-    function resizeToContent() {
-  try {
-    const doc = viewer.contentDocument || viewer.contentWindow.document;
-    if (!doc) return;
+      function resizeToContent() {
+        try {
+          const doc = viewer.contentDocument || viewer.contentWindow.document;
+          if (!doc) return;
+          // 내부 스크롤 원천 차단
+          const style = doc.createElement('style');
+          style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
+          doc.head && doc.head.appendChild(style);
+          // 아이콘 경로 보정
+          fixIconPaths(doc);
+          // 첫 대제목(_1-1-Heading) 위여백 제거
+          const headingEls = doc.querySelectorAll('._1-1-Heading');
+          headingEls.forEach(el => { el.style.marginTop = '0'; });
 
-    // 내부 스크롤 원천 차단
-    const style = doc.createElement('style');
-    style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
-    doc.head && doc.head.appendChild(style);
-
-    // 아이콘 경로 보정
-    fixIconPaths(doc);
-
-    // 첫 대제목(_1-1-Heading) 위여백 제거
-    const headingEls = doc.querySelectorAll('._1-1-Heading');
-    headingEls.forEach(el => { el.style.marginTop = '0'; });
-
-    // ===== PC 확대(1.5배) — 잘림 방지 처리 =====
-    const isPC = window.innerWidth > 900;
-    const scale = isPC ? 1.5 : 1;
-
-    // 확대 적용
-    const html = doc.documentElement;
-    const body = doc.body;
-
-    // 확대 시, 콘텐츠가 프레임 안에 들어오도록 내부 문서 너비를 배율만큼 역으로 줄임
-    // (결과적으로 화면에는 1.5배 커 보이지만 잘리지 않음)
-    html.style.transform = `scale(${scale})`;
-    html.style.transformOrigin = 'top center';
-
-    // 핵심! 잘림 방지를 위해 내부 문서의 논리적 너비를 100%/배율로 설정
-    const logicalWidth = (100 / scale) + '%';
-    html.style.width = logicalWidth;
-    body.style.width = logicalWidth;
-    html.style.margin = '0 auto';  // 가운데 정렬
-
-    // 이미지 등 컨텐츠가 넘어가지 않도록 안전망
-    const fitStyle = doc.createElement('style');
-    fitStyle.textContent = `
-      img, video, canvas { max-width: 100% !important; height: auto !important; }
-    `;
-    doc.head && doc.head.appendChild(fitStyle);
-
-    // 높이 계산 후 배율 반영
-    const h = Math.max(
-      body.scrollHeight, body.offsetHeight,
-      html.clientHeight, html.scrollHeight, html.offsetHeight
-    );
-    viewer.style.height = (h * scale) + 'px';
-    // ============================================
-  } catch (_) {}
-}
+          // 높이 계산
+          const body = doc.body, html = doc.documentElement;
+          const h = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+          viewer.style.height = h + 'px';
+        } catch (_) {}
+      }
 
       /* -------- 이벤트 바인딩 -------- */
       links.forEach(a => {
