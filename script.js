@@ -1,18 +1,16 @@
-
-/*! Shell loader for VURIX Mobile manual (iframe + hash routing + a11y)
- *  - Loads child pages into <iframe id="contentFrame">
- *  - Keeps active state on .menu-item buttons
- *  - Updates location.hash for deep-linking
- *  - Injects base styles into child docs (table/img rules, etc.)
- *  - Optional desktop zoom for readability
+/*! Fixed Shell loader for VURIX Mobile manual (iframe + hash routing)
+ *  - Consistent default route: #./pages/start.html
+ *  - Normalizes hash paths and matches data-src on buttons
+ *  - Injects base styles & optional desktop zoom
+ *  - Ensures content.css is available inside child docs
  */
 (function(){
   'use strict';
 
-  var iframe    = document.getElementById('contentFrame');
-  var menuList  = document.getElementById('menuList');
+  var iframe      = document.getElementById('contentFrame');
+  var menuList    = document.getElementById('menuList');
   var menuButtons = Array.prototype.slice.call(document.querySelectorAll('.menu-item'));
-  var topMenu   = document.querySelector('.top-menu');
+  var topMenu     = document.querySelector('.top-menu');
 
   var SCALE      = 1.25;   // 데스크톱 확대 배율
   var DESKTOP_BP = 901;    // 데스크톱 적용 임계폭(px)
@@ -27,12 +25,30 @@
     if (btn) { try{ btn.focus(); }catch(e){} }
   }
 
+  function normPath(p){
+    if (!p) return '';
+    // 해시 제거
+    p = p.replace(/^#/, '');
+    // 공백 제거
+    p = p.trim();
+    // ./pages/ 누락 시 보정: 메뉴 data-src와 일치하도록
+    if (!/^\\.?\\/?pages\\//.test(p)) {
+      // 예: 'start.html' → './pages/start.html'
+      if (!p.startsWith('./')) p = './' + p;
+      p = p.replace(/^\\.\\//, './pages/');
+    }
+    // 중복 ./pages/pages 방지
+    p = p.replace(/\\.\\/pages\\/pages\\//g, './pages/');
+    return p;
+  }
+
   function loadSrc(src, btn){
-    if (!src) return;
-    iframe.src = src;
+    var n = normPath(src);
+    if (!n) return;
+    iframe.src = n;
     if (btn) setActive(btn);
     try {
-      if (location.hash !== '#' + src) location.hash = '#' + src;
+      if (location.hash !== '#' + n) location.hash = '#' + n;
     } catch(e){}
   }
 
@@ -54,15 +70,14 @@
 
   function ensureContentCss(doc){
     try{
-      // 이미 링크가 있으면 패스
-      var has = doc.querySelector('link[rel="stylesheet"][href$="content.css"]');
+      var has = doc.querySelector('link[rel=\"stylesheet\"][href$=\"content.css\"]');
       if (has) return;
-      // 우선 현재 경로 기준
+      // 1차: 동일 폴더
       var link1 = doc.createElement('link');
       link1.rel = 'stylesheet';
       link1.href = 'content.css';
       doc.head.appendChild(link1);
-      // 혹시 루트/상위 경로에 있을 수 있으니 백업 링크도 주입
+      // 2차: 상위 폴더
       var link2 = doc.createElement('link');
       link2.rel = 'stylesheet';
       link2.href = '../content.css';
@@ -84,9 +99,9 @@
         '._1-1-Heading:first-of-type{margin-top:0 !important;padding-top:0 !important;}',
 
         // 아이콘 이미지는 1em로 고정
-        'img[src*="0_ICON" i], img[data-src*="0_ICON" i]{height:1em !important; max-height:1em !important; width:auto !important; vertical-align:middle !important; object-fit:contain;}',
-        'img[src*="0_ICON_0_NOTE_1_RF" i], img[src*="0_ICON_0_NOTE_2_ATT" i], img[src*="0_ICON_0_NOTE_3_WA" i]{height:1em !important; width:auto !important;}'
-      ].join('\n')));
+        'img[src*=\"0_ICON\" i], img[data-src*=\"0_ICON\" i]{height:1em !important; max-height:1em !important; width:auto !important; vertical-align:middle !important; object-fit:contain;}',
+        'img[src*=\"0_ICON_0_NOTE_1_RF\" i], img[src*=\"0_ICON_0_NOTE_2_ATT\" i], img[src*=\"0_ICON_0_NOTE_3_WA\" i]{height:1em !important; width:auto !important;}'
+      ].join('\\n')));
       head.appendChild(base);
 
       var mo = doc.createElement('style');
@@ -95,9 +110,9 @@
       mo.appendChild(doc.createTextNode([
         'table{ width:100% !important; table-layout:auto !important; }',
         'th,td{ white-space:normal !important; overflow-wrap:anywhere !important; word-break:break-word !important; }',
-        'table img:not([src*="0_ICON" i]):not([data-src*="0_ICON" i]){ max-width:100% !important; height:auto !important; }',
-        'img[src*="0_ICON" i], img[data-src*="0_ICON" i]{ height:1em !important; max-height:1em !important; width:auto !important; }'
-      ].join('\n')));
+        'table img:not([src*=\"0_ICON\" i]):not([data-src*=\"0_ICON\" i]){ max-width:100% !important; height:auto !important; }',
+        'img[src*=\"0_ICON\" i], img[data-src*=\"0_ICON\" i]{ height:1em !important; max-height:1em !important; width:auto !important; }'
+      ].join('\\n')));
       head.appendChild(mo);
     }catch(e){}
   }
@@ -139,15 +154,16 @@
     try{
       var doc = iframe.contentDocument || iframe.contentWindow.document;
       if (!doc) return;
-      ensureContentCss(doc);  // content.css 연결 보강
-      injectBaseStyles(doc);  // 안전 가드
-      applyDesktopScale(doc); // 데스크톱 확대
+      ensureContentCss(doc);
+      injectBaseStyles(doc);
+      applyDesktopScale(doc);
     }catch(e){}
   }
 
   function syncFromHash(){
-    var hash = location.hash || '#start.html';
-    var src = hash.replace(/^#/, '');
+    var hash = location.hash && location.hash.length > 1 ? location.hash : '#./pages/start.html';
+    var src = normPath(hash);
+    // 메뉴 활성화
     var targetBtn = null;
     for (var i=0;i<menuButtons.length;i++){
       if (menuButtons[i].dataset.src === src){ targetBtn = menuButtons[i]; break; }
@@ -189,7 +205,6 @@
     syncFromHash();
   });
 
-  // 메뉴 높이 변화 감지 -> 헤더2 높이 갱신
   if ('ResizeObserver' in window && menuList){
     var ro = new ResizeObserver(function(){ applyHeaderHeight(); });
     ro.observe(menuList);

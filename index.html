@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VURIX Mobile 웹 매뉴얼</title>
-  <link rel="stylesheet" href="style.css?v=20250814" />
+  <link rel="stylesheet" href="./style.css?v=20250814" />
 </head>
 <body>
   <header class="top-title" role="banner">
@@ -38,150 +37,7 @@
     <div class="bar-inner">©2025 Innodep, Inc.</div>
   </footer>
 
-  <script>
-    (function(){
-      var iframe = document.getElementById('contentFrame');
-      var menuButtons = Array.prototype.slice.call(document.querySelectorAll('.menu-item'));
-      var menuList = document.getElementById('menuList');
-      var topMenu = document.querySelector('.top-menu');
-      var SCALE = 1.25;      // PC 확대 배율
-      var DESKTOP_BP = 901;  // 데스크톱 적용 임계폭
-
-      function setActive(btn){
-        menuButtons.forEach(function(b){ b.classList.toggle('active', b===btn); });
-      }
-
-      function loadSrc(src, btn){
-        if (!src) return;
-        iframe.src = src;
-        if (btn) setActive(btn);
-        try { if (location.hash !== '#' + src) location.hash = '#' + src; } catch(e){}
-      }
-
-      function applyHeaderHeight(){
-        try{
-          var h = topMenu.getBoundingClientRect().height;
-          document.documentElement.style.setProperty('--header2-computed', h + 'px');
-        }catch(e){}
-      }
-
-      function isDesktop(){ return window.innerWidth >= DESKTOP_BP; }
-
-      function applyViewportMode(){
-        var desk = isDesktop();
-        document.documentElement.style.overflowY = desk ? 'hidden' : 'auto';
-        document.body.style.overflowY = desk ? 'hidden' : 'auto';
-        applyHeaderHeight();
-      }
-
-      function injectBaseStyles(doc){
-        var head = doc.head || doc.getElementsByTagName('head')[0];
-        if (!head) return;
-
-        var base = doc.createElement('style');
-        base.type = 'text/css';
-        base.appendChild(doc.createTextNode([
-          'html, body{margin:0;padding:0;}',
-          'body{display:flow-root;}',
-          'body>*:first-child{margin-top:0 !important;}',
-          '._1-1-Heading:first-of-type{margin-top:0 !important;padding-top:0 !important;}',
-          // 0_ICON 강제 1em (대소문자 무시 + data-src까지)
-          'img[src*="0_ICON" i], img[data-src*="0_ICON" i]{height:1em !important; max-height:1em !important; width:auto !important; vertical-align:middle !important; object-fit:contain;}',
-          // 세 개 파일명도 보강 매칭
-          'img[src*="0_ICON_0_NOTE_1_RF" i], img[src*="0_ICON_0_NOTE_2_ATT" i], img[src*="0_ICON_0_NOTE_3_WA" i]{height:1em !important; width:auto !important;}'
-        ].join('\n')));
-        head.appendChild(base);
-
-        // 모바일 표 규칙(아이콘 제외)
-        var mo = document.createElement('style');
-        mo.type = 'text/css';
-        mo.media = 'screen and (max-width: 700px)';
-        mo.appendChild(document.createTextNode([
-          'table{ width:100% !important; table-layout:auto !important; }',
-          'th,td{ white-space:normal !important; overflow-wrap:anywhere !important; word-break:break-word !important; }',
-          // 아이콘 제외하고만 반응형 이미지
-          'table img:not([src*="0_ICON" i]):not([data-src*="0_ICON" i]){ max-width:100% !important; height:auto !important; }',
-          // 아이콘은 1em 고정 유지
-          'img[src*="0_ICON" i], img[data-src*="0_ICON" i]{ height:1em !important; max-height:1em !important; width:auto !important; }'
-        ].join('\n')));
-        head.appendChild(mo);
-      }
-
-      function applyDesktopScale(doc){
-        if (!doc) return;
-        var body = doc.body;
-        if (!body) return;
-
-        var wrap = doc.getElementById('zoomRoot');
-        var desk = isDesktop();
-
-        if (desk){
-          if (!wrap){
-            wrap = doc.createElement('div');
-            wrap.id = 'zoomRoot';
-            while (body.firstChild){ wrap.appendChild(body.firstChild); }
-            body.appendChild(wrap);
-          }
-          wrap.style.transformOrigin = '0 0';
-          wrap.style.zoom = String(SCALE);
-          wrap.style.transform = 'scale(' + SCALE + ')';
-          wrap.style.width = 'calc(100% / ' + SCALE + ')';
-          wrap.style.position = 'relative';
-          body.style.width = '100%';
-        }else{
-          if (wrap){
-            while (wrap.firstChild){ body.insertBefore(wrap.firstChild, wrap); }
-            wrap.remove();
-          }
-          body.style.zoom = '';
-        }
-      }
-
-      function onIframeLoad(){
-        try{
-          var doc = iframe.contentDocument || iframe.contentWindow.document;
-          if (!doc) return;
-          injectBaseStyles(doc);
-          applyDesktopScale(doc);
-        }catch(e){}
-      }
-
-      iframe.addEventListener('load', onIframeLoad);
-
-      function syncFromHash(){
-        var hash = location.hash || '#pages/start.html';
-        var src = hash.replace(/^#/, '');
-        var targetBtn = null;
-        for (var i=0;i<menuButtons.length;i++){
-          if (menuButtons[i].dataset.src === src){ targetBtn = menuButtons[i]; break; }
-        }
-        if (targetBtn){ setActive(targetBtn); }
-        iframe.src = src;
-      }
-      window.addEventListener('hashchange', syncFromHash);
-
-      menuButtons.forEach(function(btn){
-        btn.addEventListener('click', function(){ loadSrc(btn.dataset.src, btn); });
-      });
-
-      document.addEventListener('DOMContentLoaded', function(){
-        applyViewportMode();
-        syncFromHash();
-      });
-
-      window.addEventListener('resize', function(){
-        applyViewportMode();
-        try{
-          var doc = iframe.contentDocument || iframe.contentWindow.document;
-          applyDesktopScale(doc);
-        }catch(e){}
-      });
-
-      if ('ResizeObserver' in window){
-        var ro = new ResizeObserver(function(){ applyHeaderHeight(); });
-        ro.observe(menuList);
-      }
-    })();
-  </script>
-<script src="script.js?v=20250814" defer></script></body>
+  <!-- 인라인 스크립트 제거, 외부 스크립트만 사용 -->
+  <script src="./script.js?v=20250814" defer></script>
+</body>
 </html>
