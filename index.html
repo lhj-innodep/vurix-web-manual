@@ -67,18 +67,74 @@
       async function loadFromHash(){const hash=location.hash||'#start';const file=routeMap[hash]||'start.html';if(!pagesBase) pagesBase=await resolveBase(file);viewer.src=pagesBase+file;setActive(routeMap[hash]?hash:'#start');}
       function projectBasePath(){const parts=location.pathname.split('/').filter(Boolean);const repoIndex=parts.indexOf('vurix-web-manual');return repoIndex>=0?'/'+parts[repoIndex]+'/':'/';}
       function fixIconPaths(doc){const base=projectBasePath();const iconAbs=base+'ko/assets/icon/';const imgs=Array.from(doc.querySelectorAll('img[src*="0_ICON" i], img[src*="icon" i]'));for(const img of imgs){const src=img.getAttribute('src')||'';const name=src.split(/[\\/]/).pop();if(name) img.setAttribute('src',iconAbs+name);}}
-      function resizeToContent(){try{const doc=viewer.contentDocument||viewer.contentWindow.document;if(!doc)return;
-        const baseStyle=doc.createElement('style'); baseStyle.textContent='html,body{overflow:hidden !important;margin:0 !important;width:100% !important;} img,video,canvas{max-width:100% !important;height:auto !important;}'; doc.head&&doc.head.appendChild(baseStyle);
-        fixIconPaths(doc);
-        Array.from(doc.querySelectorAll('._1-1-Heading')).forEach(el=>el.style.marginTop='0');
-        const isPC=window.innerWidth>900; const scale=isPC?1.5:1;
-        let wrap=doc.getElementById('_scaleWrap'); if(!wrap){wrap=doc.createElement('div'); wrap.id='_scaleWrap'; while(doc.body.firstChild) wrap.appendChild(doc.body.firstChild); doc.body.appendChild(wrap);}
-        wrap.style.transform='scale('+scale+')'; wrap.style.transformOrigin='top center'; wrap.style.width=(100/scale)+'%'; wrap.style.margin='0 auto';
-        const rect=wrap.getBoundingClientRect(); const contentHeight=rect.height; viewer.style.height=contentHeight+'px';
-      }catch(_){}};
-      links.forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const hash=a.getAttribute('href');if(location.hash!==hash) history.pushState(null,'',hash);loadFromHash();});});
-      window.addEventListener('popstate',loadFromHash); window.addEventListener('hashchange',loadFromHash);
-      viewer.addEventListener('load',()=>{resizeToContent();try{const doc=viewer.contentDocument;const observer=new MutationObserver(()=>resizeToContent());observer.observe(doc.documentElement,{childList:true,subtree:true,attributes:true,characterData:true});Array.from(doc.images||[]).forEach(img=>{if(!img.complete) img.addEventListener('load',resizeToContent);});}catch(_){}});
+
+      function resizeToContent(){
+        try{
+          const doc=viewer.contentDocument||viewer.contentWindow.document; if(!doc) return;
+
+          /* 내부 스크롤/여백 제거 */
+          const baseStyle=doc.createElement('style');
+          baseStyle.textContent='html,body{overflow:hidden !important;margin:0 !important;width:100% !important;} img,video,canvas{max-width:100% !important;height:auto !important;}';
+          doc.head && doc.head.appendChild(baseStyle);
+
+          /* 아이콘 경로 보정 + 첫 대제목 여백 제거 */
+          fixIconPaths(doc);
+          Array.from(doc.querySelectorAll('._1-1-Heading')).forEach(el=>el.style.marginTop='0');
+
+          /* PC에서만 1.5배 확대 - 래퍼 주입 방식 */
+          const isPC = window.innerWidth > 900;
+          const scale = isPC ? 1.5 : 1;
+          let wrap = doc.getElementById('_scaleWrap');
+          if(!wrap){
+            wrap = doc.createElement('div');
+            wrap.id = '_scaleWrap';
+            wrap.style.display = 'block';
+            while(doc.body.firstChild) wrap.appendChild(doc.body.firstChild);
+            doc.body.appendChild(wrap);
+          }
+
+          /* 스케일 적용 및 레이아웃 보정 */
+          wrap.style.transform = 'scale(' + scale + ')';
+          wrap.style.transformOrigin = 'top center';
+          wrap.style.width = (100/scale) + '%';
+          wrap.style.margin = '0 auto';
+
+          /* 높이 계산: 스케일 반영 + 여유 버퍼 */
+          const unscaledH = Math.max(wrap.scrollHeight, wrap.offsetHeight);
+          const contentHeight = (unscaledH * scale) + 32; // 32px 버퍼
+          viewer.style.height = contentHeight + 'px';
+
+          /* 지연 로딩/동적 콘텐츠 보정: 여러 번 재측정 */
+          clearTimeout(viewer._hT1); clearTimeout(viewer._hT2);
+          viewer._hT1 = setTimeout(resizeToContent, 200);
+          viewer._hT2 = setTimeout(resizeToContent, 800);
+        }catch(_){}
+      }
+
+      /* 이벤트 바인딩 */
+      links.forEach(a=>{
+        a.addEventListener('click',e=>{
+          e.preventDefault();
+          const hash=a.getAttribute('href');
+          if(location.hash!==hash) history.pushState(null,'',hash);
+          loadFromHash();
+        });
+      });
+      window.addEventListener('popstate',loadFromHash);
+      window.addEventListener('hashchange',loadFromHash);
+      window.addEventListener('resize',()=>{ resizeToContent(); });
+
+      viewer.addEventListener('load',()=>{
+        resizeToContent();
+        try{
+          const doc=viewer.contentDocument;
+          const observer=new MutationObserver(()=>resizeToContent());
+          observer.observe(doc.documentElement,{childList:true,subtree:true,attributes:true,characterData:true});
+          Array.from(doc.images||[]).forEach(img=>{ if(!img.complete) img.addEventListener('load',resizeToContent); });
+        }catch(_){}
+      });
+
+      /* 최초 로드 */
       loadFromHash();
     }
   })();
