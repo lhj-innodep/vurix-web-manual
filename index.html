@@ -68,22 +68,44 @@
       function projectBasePath(){const parts=location.pathname.split('/').filter(Boolean);const repoIndex=parts.indexOf('vurix-web-manual');return repoIndex>=0?'/'+parts[repoIndex]+'/':'/';}
       function fixIconPaths(doc){const base=projectBasePath();const iconAbs=base+'ko/assets/icon/';const imgs=Array.from(doc.querySelectorAll('img[src*="0_ICON" i], img[src*="icon" i]'));for(const img of imgs){const src=img.getAttribute('src')||'';const name=src.split(/[\\/]/).pop();if(name) img.setAttribute('src',iconAbs+name);}}
 
+      function ensureObservers(doc, wrap, scale){
+        // ResizeObserver: 콘텐츠 크기 변화 감지 → 즉시 재계산
+        if(!wrap._ro){
+          try{
+            wrap._ro = new ResizeObserver(()=> settleHeight(doc, wrap, scale));
+            wrap._ro.observe(wrap);
+          }catch(_){}
+        }
+        // Fonts loaded → 재계산
+        if(doc.fonts && !wrap._fontsBound){
+          wrap._fontsBound = true;
+          doc.fonts.ready.then(()=> settleHeight(doc, wrap, scale));
+        }
+        // 이미지 동적 추가 대비: 캡처 단계에서 로드 이벤트 위임
+        if(!wrap._imgBound){
+          wrap._imgBound = true;
+          doc.addEventListener('load', (e)=>{
+            const t=e.target;
+            if(t && t.tagName==='IMG') settleHeight(doc, wrap, scale);
+          }, true);
+        }
+      }
+
       function computeHeight(doc, wrap, scale){
         const htmlEl = doc.documentElement, bodyEl = doc.body;
-        // 마진 붕괴 방지를 위한 바닥 스페이서
+        // sentinel로 바닥 마진 붕괴 방지
         let sentinel = doc.getElementById('_bottomSentinel');
         if(!sentinel){ sentinel = doc.createElement('div'); sentinel.id='_bottomSentinel'; sentinel.style.height='1px'; sentinel.style.clear='both'; wrap.appendChild(sentinel); }
-        // 다양한 측정값 중 최대값 + 버퍼
-        const rectH = wrap.getBoundingClientRect().height;             // 스케일 반영됨
-        const logicalH = Math.max(wrap.scrollHeight, wrap.offsetHeight, bodyEl.scrollHeight, htmlEl.scrollHeight) * scale; // 스케일 수동 반영
-        const finalH = Math.max(rectH, logicalH) + 48; // 버퍼 48px
-        return finalH;
+        // 두 방식 모두 계산
+        const rectH = wrap.getBoundingClientRect().height;
+        const logicalH = Math.max(wrap.scrollHeight, wrap.offsetHeight, bodyEl.scrollHeight, htmlEl.scrollHeight) * scale;
+        return Math.max(rectH, logicalH) + 64; // 넉넉한 버퍼
       }
 
       function settleHeight(doc, wrap, scale, tries=0){
         const h = computeHeight(doc, wrap, scale);
         viewer.style.height = h + 'px';
-        if(tries < 12){ // 약 12프레임(애니메이션/지연로딩 대비)
+        if(tries < 5){ // 초기 몇 프레임 보정
           requestAnimationFrame(()=>settleHeight(doc, wrap, scale, tries+1));
         }
       }
@@ -116,15 +138,14 @@
           wrap.style.transformOrigin = 'top center';
           wrap.style.width = (100/scale) + '%';
           wrap.style.margin = '0 auto';
-          wrap.style.paddingBottom = '16px'; // 바닥 여유
+          wrap.style.paddingBottom = '16px';
 
-          // 여러 방식으로 높이를 계산하고, 몇 프레임 동안 재측정하여 누락 방지
+          ensureObservers(doc, wrap, scale);
           settleHeight(doc, wrap, scale);
-
-          // 지연 로딩/동적 콘텐츠 보정: 추가 타임아웃 재측정
+          // 추가 타임아웃 보정
           clearTimeout(viewer._t1); clearTimeout(viewer._t2);
-          viewer._t1 = setTimeout(()=>settleHeight(doc, wrap, scale), 300);
-          viewer._t2 = setTimeout(()=>settleHeight(doc, wrap, scale), 1200);
+          viewer._t1 = setTimeout(()=>settleHeight(doc, wrap, scale), 400);
+          viewer._t2 = setTimeout(()=>settleHeight(doc, wrap, scale), 1500);
         }catch(_){}
       }
 
