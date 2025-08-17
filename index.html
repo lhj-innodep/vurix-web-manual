@@ -68,6 +68,26 @@
       function projectBasePath(){const parts=location.pathname.split('/').filter(Boolean);const repoIndex=parts.indexOf('vurix-web-manual');return repoIndex>=0?'/'+parts[repoIndex]+'/':'/';}
       function fixIconPaths(doc){const base=projectBasePath();const iconAbs=base+'ko/assets/icon/';const imgs=Array.from(doc.querySelectorAll('img[src*="0_ICON" i], img[src*="icon" i]'));for(const img of imgs){const src=img.getAttribute('src')||'';const name=src.split(/[\\/]/).pop();if(name) img.setAttribute('src',iconAbs+name);}}
 
+      function computeHeight(doc, wrap, scale){
+        const htmlEl = doc.documentElement, bodyEl = doc.body;
+        // 마진 붕괴 방지를 위한 바닥 스페이서
+        let sentinel = doc.getElementById('_bottomSentinel');
+        if(!sentinel){ sentinel = doc.createElement('div'); sentinel.id='_bottomSentinel'; sentinel.style.height='1px'; sentinel.style.clear='both'; wrap.appendChild(sentinel); }
+        // 다양한 측정값 중 최대값 + 버퍼
+        const rectH = wrap.getBoundingClientRect().height;             // 스케일 반영됨
+        const logicalH = Math.max(wrap.scrollHeight, wrap.offsetHeight, bodyEl.scrollHeight, htmlEl.scrollHeight) * scale; // 스케일 수동 반영
+        const finalH = Math.max(rectH, logicalH) + 48; // 버퍼 48px
+        return finalH;
+      }
+
+      function settleHeight(doc, wrap, scale, tries=0){
+        const h = computeHeight(doc, wrap, scale);
+        viewer.style.height = h + 'px';
+        if(tries < 12){ // 약 12프레임(애니메이션/지연로딩 대비)
+          requestAnimationFrame(()=>settleHeight(doc, wrap, scale, tries+1));
+        }
+      }
+
       function resizeToContent(){
         try{
           const doc=viewer.contentDocument||viewer.contentWindow.document; if(!doc) return;
@@ -81,7 +101,7 @@
           fixIconPaths(doc);
           Array.from(doc.querySelectorAll('._1-1-Heading')).forEach(el=>el.style.marginTop='0');
 
-          /* PC에서만 1.5배 확대 - 래퍼 주입 방식 */
+          /* PC에서만 1.5배 확대 - 래퍼 주입 */
           const isPC = window.innerWidth > 900;
           const scale = isPC ? 1.5 : 1;
           let wrap = doc.getElementById('_scaleWrap');
@@ -92,22 +112,19 @@
             while(doc.body.firstChild) wrap.appendChild(doc.body.firstChild);
             doc.body.appendChild(wrap);
           }
-
-          /* 스케일 적용 및 레이아웃 보정 */
           wrap.style.transform = 'scale(' + scale + ')';
           wrap.style.transformOrigin = 'top center';
           wrap.style.width = (100/scale) + '%';
           wrap.style.margin = '0 auto';
+          wrap.style.paddingBottom = '16px'; // 바닥 여유
 
-          /* 높이 계산: 스케일 반영 + 여유 버퍼 */
-          const unscaledH = Math.max(wrap.scrollHeight, wrap.offsetHeight);
-          const contentHeight = (unscaledH * scale) + 32; // 32px 버퍼
-          viewer.style.height = contentHeight + 'px';
+          // 여러 방식으로 높이를 계산하고, 몇 프레임 동안 재측정하여 누락 방지
+          settleHeight(doc, wrap, scale);
 
-          /* 지연 로딩/동적 콘텐츠 보정: 여러 번 재측정 */
-          clearTimeout(viewer._hT1); clearTimeout(viewer._hT2);
-          viewer._hT1 = setTimeout(resizeToContent, 200);
-          viewer._hT2 = setTimeout(resizeToContent, 800);
+          // 지연 로딩/동적 콘텐츠 보정: 추가 타임아웃 재측정
+          clearTimeout(viewer._t1); clearTimeout(viewer._t2);
+          viewer._t1 = setTimeout(()=>settleHeight(doc, wrap, scale), 300);
+          viewer._t2 = setTimeout(()=>settleHeight(doc, wrap, scale), 1200);
         }catch(_){}
       }
 
