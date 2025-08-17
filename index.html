@@ -6,291 +6,79 @@
   <title>VURIX Mobile</title>
   <style>
     :root{
-      --container-width: 900px;         /* PC 기준 폭 */
+      --container-width: 900px;
       --container-pad: 16px;
-
-      /* PC: 상단 1줄 */
       --header-row-height: 56px;
       --header-height: var(--header-row-height);
-
       --footer-height: 56px;
-
-      --bg-topbar: #f6f6f6;             /* 상단바 배경 */
-      --bg-content: #ffffff;            /* 본문/하단 배경 */
+      --bg-topbar: #f6f6f6;
+      --bg-content: #ffffff;
       --text: #24292e;
       --muted: #6a737d;
-      --accent: #3366ff;                /* 하이라이트 컬러 */
+      --accent: #3366ff;
       --line: #d0d7de;
     }
-
     * { box-sizing: border-box; }
-    html, body {
-      margin: 0; height: 100%;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
-      color: var(--text); background: var(--bg-content); line-height: 1.5;
-    }
-
-    /* 내부 컨테이너만 폭 제한 */
-    .wrap, .footer, .header-inner { width: min(100vw, var(--container-width)); margin: 0 auto; }
-
-    /* 상단바(전체폭 배경) */
-    header.header{
-      position: fixed; top: 0; left: 0; right: 0;
-      height: var(--header-height);
-      background: var(--bg-topbar);
-      z-index: 1000;
-      border-bottom: 1px solid var(--line);
-    }
-
-    /* PC: 1줄 2열(좌 타이틀 / 우 메뉴) */
-    .header-inner{
-      height: 100%;
-      padding: 0 var(--container-pad);
-      display: grid;
-      grid-template-columns: auto 1fr;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .title-row{ font-size: 18px; font-weight: 700; letter-spacing: .2px; white-space: nowrap; }
-
-    /* 메뉴: 탭 스타일 */
-    .menu-row{ display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .menu-row a{
-      position: relative;
-      text-decoration: none;
-      padding: 10px 8px;
-      font-size: 14px; font-weight: 600;
-      color: var(--text); white-space: nowrap;
-      transition: color .15s ease;
-    }
-    .menu-row a::after{
-      content: ""; position: absolute; left: 8px; right: 8px; bottom: 6px;
-      height: 2px; background: var(--accent);
-      transform: scaleX(0); transform-origin: center;
-      transition: transform .15s ease;
-    }
-    .menu-row a:hover{ color: var(--accent); }
-    .menu-row a:hover::after{ transform: scaleX(1); }
-    .menu-row a[aria-current="page"]{ color: var(--accent); }
-    .menu-row a[aria-current="page"]::after{ transform: scaleX(1); height: 3px; }
-    .menu-row a:focus-visible{ outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
-
-    /* 본문 여백: 상·하단 고정 높이만큼 */
-    .wrap{ padding: calc(var(--header-height) + 16px) var(--container-pad) calc(var(--footer-height) + 16px); }
-
-    /* 콘텐츠 iframe: 외곽선 제거, 내부 스크롤바 제거(부모 창 스크롤 사용) */
-    .viewer{
-      width: 100%;
-      border: none; border-radius: 0;
-      display: block;
-      min-height: calc(100vh - var(--header-height) - var(--footer-height) - 32px);
-      overflow: hidden;
-      background: transparent;
-    }
-
-    /* 하단 */
-    .footer{
-      position: fixed; bottom: 0; left: 0; right: 0;
-      height: var(--footer-height);
-      background: var(--bg-content);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--muted); font-size: 12px;
-      padding: 0 var(--container-pad);
-      border-top: 1px solid var(--line);
-    }
-
-    /* ===== 모바일(≤900px): 2줄 헤더(1행 타이틀 / 2행 메뉴) ===== */
-    @media (max-width: 900px){
-      :root{
-        --container-width: 700px;      /* 요청: 모바일 700px */
-        --header-title-h: 44px;        /* 1행 타이틀 높이 */
-        --header-menu-h: 44px;         /* 2행 메뉴 높이 */
-        --header-height: calc(var(--header-title-h) + var(--header-menu-h));
-      }
-
-      .header-inner{
-        padding: 0 10px;
-        gap: 0;
-        display: grid;
-        grid-template-columns: 1fr;                /* 한 열로 */
-        grid-template-rows: var(--header-title-h) var(--header-menu-h); /* 두 행 */
-        align-items: center;
-      }
-      .title-row{
-        font-size: 16px;
-        display: flex; align-items: center;
-      }
-      .menu-row{
-        justify-content: center;                    /* 가운데 정렬 */
-        gap: 10px;
-        flex-wrap: nowrap;                          /* 한 줄 유지 */
-        overflow-x: auto;                           /* 넘치면 가로 스크롤 */
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-      }
-      .menu-row::-webkit-scrollbar{ display: none; }
-      .menu-row a{
-        padding: 8px 6px;
-        font-size: 13px;
-      }
-      .menu-row a::after{ left: 6px; right: 6px; bottom: 4px; }
-    }
+    html, body { margin:0; height:100%; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--text); background:var(--bg-content); line-height:1.5; }
+    .wrap, .footer, .header-inner { width:min(100vw,var(--container-width)); margin:0 auto; }
+    header.header{ position:fixed; top:0; left:0; right:0; height:var(--header-row-height); background:var(--bg-topbar); z-index:1000; border-bottom:1px solid var(--line); }
+    .header-inner{ height:100%; padding:0 var(--container-pad); display:grid; grid-template-columns:auto 1fr; align-items:center; gap:16px; }
+    .title-row{ font-size:18px; font-weight:700; letter-spacing:.2px; white-space:nowrap; }
+    .menu-row{ display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; }
+    .menu-row a{ position:relative; text-decoration:none; padding:10px 8px; font-size:14px; font-weight:600; color:var(--text); white-space:nowrap; transition:color .15s ease; }
+    .menu-row a::after{ content:""; position:absolute; left:8px; right:8px; bottom:6px; height:2px; background:var(--accent); transform:scaleX(0); transform-origin:center; transition:transform .15s ease; }
+    .menu-row a:hover{ color:var(--accent); }
+    .menu-row a:hover::after{ transform:scaleX(1); }
+    .menu-row a[aria-current="page"]{ color:var(--accent); }
+    .menu-row a[aria-current="page"]::after{ transform:scaleX(1); height:3px; }
+    .menu-row a:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+    .wrap{ padding:calc(var(--header-height) + 16px) var(--container-pad) calc(var(--footer-height) + 16px); }
+    .viewer{ width:100%; border:none; display:block; min-height:calc(100vh - var(--header-height) - var(--footer-height) - 32px); overflow:hidden; background:transparent; }
+    .footer{ position:fixed; bottom:0; left:0; right:0; height:var(--footer-height); background:var(--bg-content); display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; padding:0 var(--container-pad); border-top:1px solid var(--line); }
+    @media (max-width:900px){ :root{ --container-width:700px; --header-row-height:48px; --header-height:var(--header-row-height);} .header-inner{padding:0 10px;gap:10px;} .title-row{font-size:16px;} .menu-row{justify-content:flex-start;gap:10px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;} .menu-row::-webkit-scrollbar{display:none;} .menu-row a{padding:8px 6px;font-size:13px;} .menu-row a::after{left:6px; right:6px; bottom:4px;} }
   </style>
 </head>
 <body>
-  <header class="header" role="banner">
-    <div class="header-inner">
-      <div class="title-row">VURIX Mobile</div>
-      <nav class="menu-row" aria-label="주 메뉴">
-        <a href="#start"  data-file="start.html">시작</a>
-        <a href="#live"   data-file="live.html">실시간 영상</a>
-        <a href="#record" data-file="record.html">녹화 영상</a>
-        <a href="#event"  data-file="event.html">이벤트</a>
-        <a href="#setup"  data-file="setup.html">설정</a>
-        <a href="#other"  data-file="other.html">기타</a>
-        <a href="#info"   data-file="info.html">참고</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="wrap" role="main">
-    <iframe id="viewer" class="viewer" title="콘텐츠 뷰어" src="" loading="lazy" referrerpolicy="no-referrer" scrolling="no"></iframe>
-    <noscript>이 사이트는 JavaScript가 필요합니다. 브라우저 설정에서 활성화해주세요.</noscript>
-  </main>
-
-  <footer class="footer" role="contentinfo">
-    ©2025 Innodep, Inc.
-  </footer>
+  <header class="header"><div class="header-inner">
+    <div class="title-row">VURIX Mobile</div>
+    <nav class="menu-row">
+      <a href="#start"  data-file="start.html">시작</a>
+      <a href="#live"   data-file="live.html">실시간 영상</a>
+      <a href="#record" data-file="record.html">녹화 영상</a>
+      <a href="#event"  data-file="event.html">이벤트</a>
+      <a href="#setup"  data-file="setup.html">설정</a>
+      <a href="#other"  data-file="other.html">기타</a>
+      <a href="#info"   data-file="info.html">참고</a>
+    </nav>
+  </div></header>
+  <main class="wrap"><iframe id="viewer" class="viewer" title="콘텐츠 뷰어" src="" loading="lazy" referrerpolicy="no-referrer" scrolling="no"></iframe></main>
+  <footer class="footer">©2025 Innodep, Inc.</footer>
 
   <script>
-  (function () {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else { init(); }
-
-    function init() {
-      const viewer = document.getElementById('viewer');
-      if (!viewer) return;
-
-      const links  = Array.from(document.querySelectorAll('.menu-row a'));
-      const routeMap = {
-        '#start':  'start.html',
-        '#live':   'live.html',
-        '#record': 'record.html',
-        '#event':  'event.html',
-        '#setup':  'setup.html',
-        '#other':  'other.html',
-        '#info':   'info.html'
-      };
-
-      /* 경로 자동 탐지 */
-      const candidates = ['pages/', 'ko/pages/', '../ko/pages/', '../../ko/pages/', 'docs/ko/pages/'];
-      let pagesBase = null;
-      async function resolveBase(file) {
-        for (const base of candidates) {
-          try {
-            const url = new URL(base + file, location.href);
-            const res = await fetch(url.toString(), { method: 'HEAD', cache: 'no-store' });
-            if (res.ok) return base;
-          } catch (_) {}
-        }
-        return 'ko/pages/';
-      }
-
-      function setActive(hash) {
-        links.forEach(a => a.removeAttribute('aria-current'));
-        const t = links.find(a => a.getAttribute('href') === hash);
-        if (t) t.setAttribute('aria-current', 'page');
-      }
-
-      async function loadFromHash() {
-        const hash = location.hash || '#start';
-        const file = routeMap[hash] || 'start.html';
-        if (!pagesBase) pagesBase = await resolveBase(file);
-        viewer.src = pagesBase + file;
-        setActive(routeMap[hash] ? hash : '#start');
-      }
-
-      /* 프로젝트 절대경로 계산(아이콘 보정) */
-      function projectBasePath() {
-        const parts = location.pathname.split('/').filter(Boolean);
-        const repoIndex = parts.indexOf('vurix-web-manual');
-        return repoIndex >= 0 ? '/' + parts[repoIndex] + '/' : '/';
-      }
-
-      /* 아이콘 경로 보정 */
-      function fixIconPaths(doc) {
-        const base = projectBasePath();
-        const iconAbs = base + 'ko/assets/icon/';
-        const imgs = Array.from(doc.querySelectorAll('img[src*="0_ICON" i], img[src*="icon" i]'));
-        for (const img of imgs) {
-          const src = img.getAttribute('src') || '';
-          const name = src.split(/[\\/]/).pop();
-          if (name) img.setAttribute('src', iconAbs + name);
-        }
-      }
-
-      /* iframe 높이/스크롤 + 여백/확대 */
-      function resizeToContent() {
-        try {
-          const doc = viewer.contentDocument || viewer.contentWindow.document;
-          if (!doc) return;
-
-          /* 내부 스크롤 제거 */
-          const style = doc.createElement('style');
-          style.textContent = 'html,body{overflow:hidden !important;margin:0 !important;}';
-          doc.head && doc.head.appendChild(style);
-
-          /* 아이콘 경로 보정 */
-          fixIconPaths(doc);
-
-          /* 대제목(_1-1-Heading) 위여백 제거 */
-          const headingEls = doc.querySelectorAll('._1-1-Heading');
-          headingEls.forEach(el => { el.style.marginTop = '0'; });
-
-          /* PC에서만 1.5배 확대 + 잘림 방지 */
-          const isPC = window.innerWidth > 900;
-          const scale = isPC ? 1.5 : 1;
-          const htmlEl = doc.documentElement, bodyEl = doc.body;
-          htmlEl.style.transform = `scale(${scale})`;
-          htmlEl.style.transformOrigin = 'top center';
-          const logicalWidth = (100 / scale) + '%';
-          htmlEl.style.width = logicalWidth; bodyEl.style.width = logicalWidth;
-          htmlEl.style.margin = '0 auto';
-
-          /* 높이 계산(배율 반영) */
-          const h = Math.max(bodyEl.scrollHeight, bodyEl.offsetHeight, htmlEl.clientHeight, htmlEl.scrollHeight, htmlEl.offsetHeight);
-          viewer.style.height = (h * scale) + 'px';
-        } catch (_) {}
-      }
-
-      /* 이벤트 바인딩 */
-      links.forEach(a => {
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          const hash = a.getAttribute('href');
-          if (location.hash !== hash) history.pushState(null, '', hash);
-          loadFromHash();
-        });
-      });
-      window.addEventListener('popstate', loadFromHash);
-      window.addEventListener('hashchange', loadFromHash);
-
-      viewer.addEventListener('load', () => {
-        resizeToContent();
-        try {
-          const doc = viewer.contentDocument;
-          const observer = new MutationObserver(() => resizeToContent());
-          observer.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
-          Array.from(doc.images || []).forEach(img => {
-            if (!img.complete) img.addEventListener('load', resizeToContent);
-          });
-        } catch (_) {}
-      });
-
-      /* 최초 로드 */
+  (function(){
+    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+    function init(){
+      const viewer=document.getElementById('viewer'); if(!viewer) return;
+      const links=Array.from(document.querySelectorAll('.menu-row a'));
+      const routeMap={'#start':'start.html','#live':'live.html','#record':'record.html','#event':'event.html','#setup':'setup.html','#other':'other.html','#info':'info.html'};
+      const candidates=['pages/','ko/pages/','../ko/pages/','../../ko/pages/','docs/ko/pages/']; let pagesBase=null;
+      async function resolveBase(file){for(const base of candidates){try{const url=new URL(base+file,location.href);const res=await fetch(url.toString(),{method:'HEAD',cache:'no-store'});if(res.ok)return base;}catch(_){}}return 'ko/pages/';}
+      function setActive(hash){links.forEach(a=>a.removeAttribute('aria-current'));const t=links.find(a=>a.getAttribute('href')===hash);if(t)t.setAttribute('aria-current','page');}
+      async function loadFromHash(){const hash=location.hash||'#start';const file=routeMap[hash]||'start.html';if(!pagesBase) pagesBase=await resolveBase(file);viewer.src=pagesBase+file;setActive(routeMap[hash]?hash:'#start');}
+      function projectBasePath(){const parts=location.pathname.split('/').filter(Boolean);const repoIndex=parts.indexOf('vurix-web-manual');return repoIndex>=0?'/'+parts[repoIndex]+'/':'/';}
+      function fixIconPaths(doc){const base=projectBasePath();const iconAbs=base+'ko/assets/icon/';const imgs=Array.from(doc.querySelectorAll('img[src*="0_ICON" i], img[src*="icon" i]'));for(const img of imgs){const src=img.getAttribute('src')||'';const name=src.split(/[\\/]/).pop();if(name) img.setAttribute('src',iconAbs+name);}}
+      function resizeToContent(){try{const doc=viewer.contentDocument||viewer.contentWindow.document;if(!doc)return;
+        const baseStyle=doc.createElement('style'); baseStyle.textContent='html,body{overflow:hidden !important;margin:0 !important;width:100% !important;} img,video,canvas{max-width:100% !important;height:auto !important;}'; doc.head&&doc.head.appendChild(baseStyle);
+        fixIconPaths(doc);
+        Array.from(doc.querySelectorAll('._1-1-Heading')).forEach(el=>el.style.marginTop='0');
+        const isPC=window.innerWidth>900; const scale=isPC?1.5:1;
+        let wrap=doc.getElementById('_scaleWrap'); if(!wrap){wrap=doc.createElement('div'); wrap.id='_scaleWrap'; while(doc.body.firstChild) wrap.appendChild(doc.body.firstChild); doc.body.appendChild(wrap);}
+        wrap.style.transform='scale('+scale+')'; wrap.style.transformOrigin='top center'; wrap.style.width=(100/scale)+'%'; wrap.style.margin='0 auto';
+        const rect=wrap.getBoundingClientRect(); const contentHeight=rect.height; viewer.style.height=contentHeight+'px';
+      }catch(_){}};
+      links.forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const hash=a.getAttribute('href');if(location.hash!==hash) history.pushState(null,'',hash);loadFromHash();});});
+      window.addEventListener('popstate',loadFromHash); window.addEventListener('hashchange',loadFromHash);
+      viewer.addEventListener('load',()=>{resizeToContent();try{const doc=viewer.contentDocument;const observer=new MutationObserver(()=>resizeToContent());observer.observe(doc.documentElement,{childList:true,subtree:true,attributes:true,characterData:true});Array.from(doc.images||[]).forEach(img=>{if(!img.complete) img.addEventListener('load',resizeToContent);});}catch(_){}});
       loadFromHash();
     }
   })();
